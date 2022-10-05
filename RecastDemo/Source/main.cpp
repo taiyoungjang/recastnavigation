@@ -111,7 +111,7 @@ int main(int /*argc*/, char** /*argv*/)
 	}
 	else
 	{
-		float aspect = 16.0f / 9.0f;
+		double aspect = 16.0 / 9.0;
 		width = rcMin(displayMode.w, (int)(displayMode.h * aspect)) - 80;
 		height = displayMode.h - 80;
 	}
@@ -136,24 +136,24 @@ int main(int /*argc*/, char** /*argv*/)
 		return -1;
 	}
 	
-	float t = 0.0f;
-	float timeAcc = 0.0f;
+	double t = 0.0;
+	double timeAcc = 0.0;
 	Uint32 prevFrameTime = SDL_GetTicks();
 	int mousePos[2] = {0, 0};
 	int origMousePos[2] = {0, 0}; // Used to compute mouse movement totals across frames.
 	
-	float cameraEulers[] = {45, -45};
-	float cameraPos[] = {0, 0, 0};
-	float camr = 1000;
-	float origCameraEulers[] = {0, 0}; // Used to compute rotational changes across frames.
+	double cameraEulers[] = {45, -45};
+	double cameraPos[] = {0, 0, 0};
+	double camr = 1000;
+	double origCameraEulers[] = {0, 0}; // Used to compute rotational changes across frames.
 	
-	float moveFront = 0.0f, moveBack = 0.0f, moveLeft = 0.0f, moveRight = 0.0f, moveUp = 0.0f, moveDown = 0.0f;
+	double moveFront = 0.0, moveBack = 0.0, moveLeft = 0.0, moveRight = 0.0, moveUp = 0.0, moveDown = 0.0;
 	
-	float scrollZoom = 0;
+	double scrollZoom = 0;
 	bool rotate = false;
 	bool movedDuringRotate = false;
-	float rayStart[3];
-	float rayEnd[3];
+	double rayStart[3];
+	double rayEnd[3];
 	bool mouseOverMenu = false;
 	
 	bool showMenu = !presentationMode;
@@ -174,7 +174,7 @@ int main(int /*argc*/, char** /*argv*/)
 	const string meshesFolder = "Meshes";
 	string meshName = "Choose Mesh...";
 	
-	float markerPosition[3] = {0, 0, 0};
+	double markerPosition[3] = {0, 0, 0};
 	bool markerPositionSet = false;
 	
 	InputGeom* geom = 0;
@@ -186,11 +186,11 @@ int main(int /*argc*/, char** /*argv*/)
 	BuildContext ctx;
 	
 	// Fog.
-	float fogColor[4] = { 0.32f, 0.31f, 0.30f, 1.0f };
+	float fogColor[4] = { 0.32, 0.31, 0.30, 1.0 };
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE, GL_LINEAR);
-	glFogf(GL_FOG_START, camr * 0.1f);
-	glFogf(GL_FOG_END, camr * 1.25f);
+	glFogf(GL_FOG_START, camr * 0.1);
+	glFogf(GL_FOG_END, camr * 1.25);
 	glFogfv(GL_FOG_COLOR, fogColor);
 	
 	glEnable(GL_CULL_FACE);
@@ -264,7 +264,7 @@ int main(int /*argc*/, char** /*argv*/)
 						}
 						else
 						{
-							scrollZoom += 1.0f;
+							scrollZoom += 1.0;
 						}
 					}
 					else
@@ -275,7 +275,7 @@ int main(int /*argc*/, char** /*argv*/)
 						}
 						else
 						{
-							scrollZoom -= 1.0f;
+							scrollZoom -= 1.0;
 						}
 					}
 					break;
@@ -328,8 +328,8 @@ int main(int /*argc*/, char** /*argv*/)
 					{
 						int dx = mousePos[0] - origMousePos[0];
 						int dy = mousePos[1] - origMousePos[1];
-						cameraEulers[0] = origCameraEulers[0] - dy * 0.25f;
-						cameraEulers[1] = origCameraEulers[1] + dx * 0.25f;
+						cameraEulers[0] = origCameraEulers[0] - dy * 0.25;
+						cameraEulers[1] = origCameraEulers[1] + dx * 0.25;
 						if (dx * dx + dy * dy > 3 * 3)
 						{
 							movedDuringRotate = true;
@@ -353,7 +353,7 @@ int main(int /*argc*/, char** /*argv*/)
 			mouseButtonMask |= IMGUI_MBUT_RIGHT;
 		
 		Uint32 time = SDL_GetTicks();
-		float dt = (time - prevFrameTime) / 1000.0f;
+		double dt = (time - prevFrameTime) / 1000.0;
 		prevFrameTime = time;
 		
 		t += dt;
@@ -361,7 +361,7 @@ int main(int /*argc*/, char** /*argv*/)
 		// Hit test mesh.
 		if (processHitTest && geom && sample)
 		{
-			float hitTime;
+			double hitTime;
 			bool hit = geom->raycastMesh(rayStart, rayEnd, hitTime);
 			
 			if (hit)
@@ -376,7 +376,7 @@ int main(int /*argc*/, char** /*argv*/)
 				}
 				else
 				{
-					float pos[3];
+					double pos[3];
 					pos[0] = rayStart[0] + (rayEnd[0] - rayStart[0]) * hitTime;
 					pos[1] = rayStart[1] + (rayEnd[1] - rayStart[1]) * hitTime;
 					pos[2] = rayStart[2] + (rayEnd[2] - rayStart[2]) * hitTime;
@@ -394,9 +394,10 @@ int main(int /*argc*/, char** /*argv*/)
 		}
 		
 		// Update sample simulation.
-		const float SIM_RATE = 20;
-		const float DELTA_TIME = 1.0f / SIM_RATE;
-		timeAcc = rcClamp(timeAcc + dt, -1.0f, 1.0f);
+		const double SIM_RATE = 20;
+		const double DELTA_TIME = 1.0 / SIM_RATE;
+        const double one = 1.0;
+		timeAcc = rcClamp(timeAcc + dt, -one, one);
 		int simIter = 0;
 		while (timeAcc > DELTA_TIME)
 		{
@@ -409,10 +410,10 @@ int main(int /*argc*/, char** /*argv*/)
 		}
 
 		// Clamp the framerate so that we do not hog all the CPU.
-		const float MIN_FRAME_TIME = 1.0f / 40.0f;
+		const double MIN_FRAME_TIME = 1.0 / 40.0;
 		if (dt < MIN_FRAME_TIME)
 		{
-			int ms = (int)((MIN_FRAME_TIME - dt) * 1000.0f);
+			int ms = (int)((MIN_FRAME_TIME - dt) * 1000.0);
 			if (ms > 10) ms = 10;
 			if (ms >= 0) SDL_Delay(ms);
 		}
@@ -423,7 +424,7 @@ int main(int /*argc*/, char** /*argv*/)
 		glGetIntegerv(GL_VIEWPORT, viewport);
 		
 		// Clear the screen
-		glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
+		glClearColor(0.3, 0.3, 0.32, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -433,7 +434,7 @@ int main(int /*argc*/, char** /*argv*/)
 		// Compute the projection matrix.
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(50.0f, (float)width/(float)height, 1.0f, camr);
+		gluPerspective(50.0, (double)width/(double)height, 1.0, camr);
 		GLdouble projectionMatrix[16];
 		glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
 		
@@ -448,41 +449,42 @@ int main(int /*argc*/, char** /*argv*/)
 		
 		// Get hit ray position and direction.
 		GLdouble x, y, z;
-		gluUnProject(mousePos[0], mousePos[1], 0.0f, modelviewMatrix, projectionMatrix, viewport, &x, &y, &z);
-		rayStart[0] = (float)x;
-		rayStart[1] = (float)y;
-		rayStart[2] = (float)z;
-		gluUnProject(mousePos[0], mousePos[1], 1.0f, modelviewMatrix, projectionMatrix, viewport, &x, &y, &z);
-		rayEnd[0] = (float)x;
-		rayEnd[1] = (float)y;
-		rayEnd[2] = (float)z;
+		gluUnProject(mousePos[0], mousePos[1], 0.0, modelviewMatrix, projectionMatrix, viewport, &x, &y, &z);
+		rayStart[0] = (double)x;
+		rayStart[1] = (double)y;
+		rayStart[2] = (double)z;
+		gluUnProject(mousePos[0], mousePos[1], 1.0, modelviewMatrix, projectionMatrix, viewport, &x, &y, &z);
+		rayEnd[0] = (double)x;
+		rayEnd[1] = (double)y;
+		rayEnd[2] = (double)z;
 		
 		// Handle keyboard movement.
 		const Uint8* keystate = SDL_GetKeyboardState(NULL);
-		moveFront	= rcClamp(moveFront	+ dt * 4 * ((keystate[SDL_SCANCODE_W] || keystate[SDL_SCANCODE_UP		]) ? 1 : -1), 0.0f, 1.0f);
-		moveLeft	= rcClamp(moveLeft	+ dt * 4 * ((keystate[SDL_SCANCODE_A] || keystate[SDL_SCANCODE_LEFT		]) ? 1 : -1), 0.0f, 1.0f);
-		moveBack	= rcClamp(moveBack	+ dt * 4 * ((keystate[SDL_SCANCODE_S] || keystate[SDL_SCANCODE_DOWN		]) ? 1 : -1), 0.0f, 1.0f);
-		moveRight	= rcClamp(moveRight	+ dt * 4 * ((keystate[SDL_SCANCODE_D] || keystate[SDL_SCANCODE_RIGHT	]) ? 1 : -1), 0.0f, 1.0f);
-		moveUp		= rcClamp(moveUp	+ dt * 4 * ((keystate[SDL_SCANCODE_Q] || keystate[SDL_SCANCODE_PAGEUP	]) ? 1 : -1), 0.0f, 1.0f);
-		moveDown	= rcClamp(moveDown	+ dt * 4 * ((keystate[SDL_SCANCODE_E] || keystate[SDL_SCANCODE_PAGEDOWN	]) ? 1 : -1), 0.0f, 1.0f);
+        const double zero = 0.0;
+		moveFront	= rcClamp(moveFront	+ dt * 4 * ((keystate[SDL_SCANCODE_W] || keystate[SDL_SCANCODE_UP		]) ? 1 : -1), zero, one);
+		moveLeft	= rcClamp(moveLeft	+ dt * 4 * ((keystate[SDL_SCANCODE_A] || keystate[SDL_SCANCODE_LEFT		]) ? 1 : -1), zero, one);
+		moveBack	= rcClamp(moveBack	+ dt * 4 * ((keystate[SDL_SCANCODE_S] || keystate[SDL_SCANCODE_DOWN		]) ? 1 : -1), zero, one);
+		moveRight	= rcClamp(moveRight	+ dt * 4 * ((keystate[SDL_SCANCODE_D] || keystate[SDL_SCANCODE_RIGHT	]) ? 1 : -1), zero, one);
+		moveUp		= rcClamp(moveUp	+ dt * 4 * ((keystate[SDL_SCANCODE_Q] || keystate[SDL_SCANCODE_PAGEUP	]) ? 1 : -1), zero, one);
+		moveDown	= rcClamp(moveDown	+ dt * 4 * ((keystate[SDL_SCANCODE_E] || keystate[SDL_SCANCODE_PAGEDOWN	]) ? 1 : -1), zero, one);
 		
-		float keybSpeed = 22.0f;
+		double keybSpeed = 22.0;
 		if (SDL_GetModState() & KMOD_SHIFT)
 		{
-			keybSpeed *= 4.0f;
+			keybSpeed *= 4.0;
 		}
 		
-		float movex = (moveRight - moveLeft) * keybSpeed * dt;
-		float movey = (moveBack - moveFront) * keybSpeed * dt + scrollZoom * 2.0f;
+		double movex = (moveRight - moveLeft) * keybSpeed * dt;
+		double movey = (moveBack - moveFront) * keybSpeed * dt + scrollZoom * 2.0;
 		scrollZoom = 0;
 		
-		cameraPos[0] += movex * (float)modelviewMatrix[0];
-		cameraPos[1] += movex * (float)modelviewMatrix[4];
-		cameraPos[2] += movex * (float)modelviewMatrix[8];
+		cameraPos[0] += movex * (double)modelviewMatrix[0];
+		cameraPos[1] += movex * (double)modelviewMatrix[4];
+		cameraPos[2] += movex * (double)modelviewMatrix[8];
 		
-		cameraPos[0] += movey * (float)modelviewMatrix[2];
-		cameraPos[1] += movey * (float)modelviewMatrix[6];
-		cameraPos[2] += movey * (float)modelviewMatrix[10];
+		cameraPos[0] += movey * (double)modelviewMatrix[2];
+		cameraPos[1] += movey * (double)modelviewMatrix[6];
+		cameraPos[2] += movey * (double)modelviewMatrix[10];
 
 		cameraPos[1] += (moveUp - moveDown) * keybSpeed * dt;
 
@@ -570,9 +572,9 @@ int main(int /*argc*/, char** /*argv*/)
 			if (geom)
 			{
 				char text[64];
-				snprintf(text, 64, "Verts: %.1fk  Tris: %.1fk",
-						 geom->getMesh()->getVertCount()/1000.0f,
-						 geom->getMesh()->getTriCount()/1000.0f);
+				snprintf(text, 64, "Verts: %.1lfk  Tris: %.1lfk",
+						 geom->getMesh()->getVertCount()/1000.0,
+						 geom->getMesh()->getTriCount()/1000.0);
 				imguiValue(text);
 			}
 			imguiSeparator();
@@ -641,8 +643,8 @@ int main(int /*argc*/, char** /*argv*/)
 
 			if (geom || sample)
 			{
-				const float* bmin = 0;
-				const float* bmax = 0;
+				const double* bmin = 0;
+				const double* bmax = 0;
 				if (geom)
 				{
 					bmin = geom->getNavMeshBoundsMin();
@@ -651,7 +653,7 @@ int main(int /*argc*/, char** /*argv*/)
 				// Reset camera and fog to match the mesh bounds.
 				if (bmin && bmax)
 				{
-					camr = sqrtf(rcSqr(bmax[0]-bmin[0]) +
+					camr = sqrt(rcSqr(bmax[0]-bmin[0]) +
 								 rcSqr(bmax[1]-bmin[1]) +
 								 rcSqr(bmax[2]-bmin[2])) / 2;
 					cameraPos[0] = (bmax[0] + bmin[0]) / 2 + camr;
@@ -661,8 +663,8 @@ int main(int /*argc*/, char** /*argv*/)
 				}
 				cameraEulers[0] = 45;
 				cameraEulers[1] = -45;
-				glFogf(GL_FOG_START, camr*0.1f);
-				glFogf(GL_FOG_END, camr*1.25f);
+				glFogf(GL_FOG_START, camr*0.1);
+				glFogf(GL_FOG_END, camr*1.25);
 			}
 			
 			imguiEndScrollArea();
@@ -720,8 +722,8 @@ int main(int /*argc*/, char** /*argv*/)
 
 				if (geom || sample)
 				{
-					const float* bmin = 0;
-					const float* bmax = 0;
+					const double* bmin = 0;
+					const double* bmax = 0;
 					if (geom)
 					{
 						bmin = geom->getNavMeshBoundsMin();
@@ -730,7 +732,7 @@ int main(int /*argc*/, char** /*argv*/)
 					// Reset camera and fog to match the mesh bounds.
 					if (bmin && bmax)
 					{
-						camr = sqrtf(rcSqr(bmax[0]-bmin[0]) +
+						camr = sqrt(rcSqr(bmax[0]-bmin[0]) +
 									 rcSqr(bmax[1]-bmin[1]) +
 									 rcSqr(bmax[2]-bmin[2])) / 2;
 						cameraPos[0] = (bmax[0] + bmin[0]) / 2 + camr;
@@ -740,8 +742,8 @@ int main(int /*argc*/, char** /*argv*/)
 					}
 					cameraEulers[0] = 45;
 					cameraEulers[1] = -45;
-					glFogf(GL_FOG_START, camr * 0.1f);
-					glFogf(GL_FOG_END, camr * 1.25f);
+					glFogf(GL_FOG_START, camr * 0.1);
+					glFogf(GL_FOG_END, camr * 1.25);
 				}
 			}
 			
@@ -836,8 +838,8 @@ int main(int /*argc*/, char** /*argv*/)
 					
 					if (geom || sample)
 					{
-						const float* bmin = 0;
-						const float* bmax = 0;
+						const double* bmin = 0;
+						const double* bmax = 0;
 						if (geom)
 						{
 							bmin = geom->getNavMeshBoundsMin();
@@ -846,7 +848,7 @@ int main(int /*argc*/, char** /*argv*/)
 						// Reset camera and fog to match the mesh bounds.
 						if (bmin && bmax)
 						{
-							camr = sqrtf(rcSqr(bmax[0] - bmin[0]) +
+							camr = sqrt(rcSqr(bmax[0] - bmin[0]) +
 										 rcSqr(bmax[1] - bmin[1]) +
 										 rcSqr(bmax[2] - bmin[2])) / 2;
 							cameraPos[0] = (bmax[0] + bmin[0]) / 2 + camr;
@@ -856,8 +858,8 @@ int main(int /*argc*/, char** /*argv*/)
 						}
 						cameraEulers[0] = 45;
 						cameraEulers[1] = -45;
-						glFogf(GL_FOG_START, camr * 0.2f);
-						glFogf(GL_FOG_END, camr * 1.25f);
+						glFogf(GL_FOG_START, camr * 0.2);
+						glFogf(GL_FOG_END, camr * 1.25);
 					}
 					
 					// Do the tests.
@@ -897,19 +899,19 @@ int main(int /*argc*/, char** /*argv*/)
 								  modelviewMatrix, projectionMatrix, viewport, &x, &y, &z))
 		{
 			// Draw marker circle
-			glLineWidth(5.0f);
+			glLineWidth(5.0);
 			glColor4ub(240,220,0,196);
 			glBegin(GL_LINE_LOOP);
-			const float r = 25.0f;
+			const double r = 25.0;
 			for (int i = 0; i < 20; ++i)
 			{
-				const float a = (float)i / 20.0f * RC_PI*2;
-				const float fx = (float)x + cosf(a)*r;
-				const float fy = (float)y + sinf(a)*r;
+				const double a = (double)i / 20.0 * RC_PI*2;
+				const double fx = (double)x + cos(a)*r;
+				const double fy = (double)y + sin(a)*r;
 				glVertex2f(fx,fy);
 			}
 			glEnd();
-			glLineWidth(1.0f);
+			glLineWidth(1.0);
 		}
 		
 		imguiEndFrame();

@@ -63,13 +63,13 @@ dtProximityGrid::~dtProximityGrid()
 	dtFree(m_pool);
 }
 
-bool dtProximityGrid::init(const int poolSize, const float cellSize)
+bool dtProximityGrid::init(const int poolSize, const double cellSize)
 {
 	dtAssert(poolSize > 0);
-	dtAssert(cellSize > 0.0f);
+	dtAssert(cellSize > 0.0);
 	
 	m_cellSize = cellSize;
-	m_invCellSize = 1.0f / m_cellSize;
+	m_invCellSize = 1.0 / m_cellSize;
 	
 	// Allocate hashs buckets
 	m_bucketsSize = dtNextPow2(poolSize);
@@ -100,8 +100,8 @@ void dtProximityGrid::clear()
 }
 
 void dtProximityGrid::addItem(const unsigned short id,
-							  const float minx, const float miny,
-							  const float maxx, const float maxy)
+							  const double minx, const double miny,
+							  const double maxx, const double maxy)
 {
 	const int iminx = (int)dtMathFloorf(minx * m_invCellSize);
 	const int iminy = (int)dtMathFloorf(miny * m_invCellSize);
@@ -133,8 +133,8 @@ void dtProximityGrid::addItem(const unsigned short id,
 	}
 }
 
-int dtProximityGrid::queryItems(const float minx, const float miny,
-								const float maxx, const float maxy,
+int dtProximityGrid::queryItems(const double minx, const double miny,
+								const double maxx, const double maxy,
 								unsigned short* ids, const int maxIds) const
 {
 	const int iminx = (int)dtMathFloorf(minx * m_invCellSize);

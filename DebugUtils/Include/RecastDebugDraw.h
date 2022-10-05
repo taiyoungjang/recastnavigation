@@ -19,8 +19,8 @@
 #ifndef RECAST_DEBUGDRAW_H
 #define RECAST_DEBUGDRAW_H
 
-void duDebugDrawTriMesh(struct duDebugDraw* dd, const float* verts, int nverts, const int* tris, const float* normals, int ntris, const unsigned char* flags, const float texScale);
-void duDebugDrawTriMeshSlope(struct duDebugDraw* dd, const float* verts, int nverts, const int* tris, const float* normals, int ntris, const float walkableSlopeAngle, const float texScale);
+void duDebugDrawTriMesh(struct duDebugDraw* dd, const double* verts, int nverts, const int* tris, const double* normals, int ntris, const unsigned char* flags, const double texScale);
+void duDebugDrawTriMeshSlope(struct duDebugDraw* dd, const double* verts, int nverts, const int* tris, const double* normals, int ntris, const double walkableSlopeAngle, const double texScale);
 
 void duDebugDrawHeightfieldSolid(struct duDebugDraw* dd, const struct rcHeightfield& hf);
 void duDebugDrawHeightfieldWalkable(struct duDebugDraw* dd, const struct rcHeightfield& hf);
@@ -33,9 +33,9 @@ void duDebugDrawHeightfieldLayer(duDebugDraw* dd, const struct rcHeightfieldLaye
 void duDebugDrawHeightfieldLayers(duDebugDraw* dd, const struct rcHeightfieldLayerSet& lset);
 void duDebugDrawHeightfieldLayersRegions(duDebugDraw* dd, const struct rcHeightfieldLayerSet& lset);
 
-void duDebugDrawRegionConnections(struct duDebugDraw* dd, const struct rcContourSet& cset, const float alpha = 1.0f);
-void duDebugDrawRawContours(struct duDebugDraw* dd, const struct rcContourSet& cset, const float alpha = 1.0f);
-void duDebugDrawContours(struct duDebugDraw* dd, const struct rcContourSet& cset, const float alpha = 1.0f);
+void duDebugDrawRegionConnections(struct duDebugDraw* dd, const struct rcContourSet& cset, const double alpha = 1.0);
+void duDebugDrawRawContours(struct duDebugDraw* dd, const struct rcContourSet& cset, const double alpha = 1.0);
+void duDebugDrawContours(struct duDebugDraw* dd, const struct rcContourSet& cset, const double alpha = 1.0);
 void duDebugDrawPolyMesh(struct duDebugDraw* dd, const struct rcPolyMesh& mesh);
 void duDebugDrawPolyMeshDetail(struct duDebugDraw* dd, const struct rcPolyMeshDetail& dmesh);
 

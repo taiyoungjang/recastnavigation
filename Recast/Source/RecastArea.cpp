@@ -313,7 +313,7 @@ bool rcMedianFilterWalkableArea(rcContext* ctx, rcCompactHeightfield& chf)
 /// The value of spacial parameters are in world units.
 /// 
 /// @see rcCompactHeightfield, rcMedianFilterWalkableArea
-void rcMarkBoxArea(rcContext* ctx, const float* bmin, const float* bmax, unsigned char areaId,
+void rcMarkBoxArea(rcContext* ctx, const double* bmin, const double* bmax, unsigned char areaId,
 				   rcCompactHeightfield& chf)
 {
 	rcAssert(ctx);
@@ -356,13 +356,13 @@ void rcMarkBoxArea(rcContext* ctx, const float* bmin, const float* bmax, unsigne
 }
 
 
-static int pointInPoly(int nvert, const float* verts, const float* p)
+static int pointInPoly(int nvert, const double* verts, const double* p)
 {
 	int i, j, c = 0;
 	for (i = 0, j = nvert-1; i < nvert; j = i++)
 	{
-		const float* vi = &verts[i*3];
-		const float* vj = &verts[j*3];
+		const double* vi = &verts[i*3];
+		const double* vj = &verts[j*3];
 		if (((vi[2] > p[2]) != (vj[2] > p[2])) &&
 			(p[0] < (vj[0]-vi[0]) * (p[2]-vi[2]) / (vj[2]-vi[2]) + vi[0]) )
 			c = !c;
@@ -378,15 +378,15 @@ static int pointInPoly(int nvert, const float* verts, const float* p)
 /// projected onto the xz-plane at @p hmin, then extruded to @p hmax.
 /// 
 /// @see rcCompactHeightfield, rcMedianFilterWalkableArea
-void rcMarkConvexPolyArea(rcContext* ctx, const float* verts, const int nverts,
-						  const float hmin, const float hmax, unsigned char areaId,
+void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, const int nverts,
+						  const double hmin, const double hmax, unsigned char areaId,
 						  rcCompactHeightfield& chf)
 {
 	rcAssert(ctx);
 	
 	rcScopedTimer timer(ctx, RC_TIMER_MARK_CONVEXPOLY_AREA);
 
-	float bmin[3], bmax[3];
+	double bmin[3], bmax[3];
 	rcVcopy(bmin, verts);
 	rcVcopy(bmax, verts);
 	for (int i = 1; i < nverts; ++i)
@@ -428,10 +428,10 @@ void rcMarkConvexPolyArea(rcContext* ctx, const float* verts, const int nverts,
 					continue;
 				if ((int)s.y >= miny && (int)s.y <= maxy)
 				{
-					float p[3];
-					p[0] = chf.bmin[0] + (x+0.5f)*chf.cs; 
+					double p[3];
+					p[0] = chf.bmin[0] + (x+0.5)*chf.cs;
 					p[1] = 0;
-					p[2] = chf.bmin[2] + (z+0.5f)*chf.cs; 
+					p[2] = chf.bmin[2] + (z+0.5)*chf.cs;
 
 					if (pointInPoly(nverts, verts, p))
 					{
@@ -443,10 +443,10 @@ void rcMarkConvexPolyArea(rcContext* ctx, const float* verts, const int nverts,
 	}
 }
 
-int rcOffsetPoly(const float* verts, const int nverts, const float offset,
-				 float* outVerts, const int maxOutVerts)
+int rcOffsetPoly(const double* verts, const int nverts, const double offset,
+				 double* outVerts, const int maxOutVerts)
 {
-	const float	MITER_LIMIT = 1.20f;
+	const double	MITER_LIMIT = 1.20;
 
 	int n = 0;
 
@@ -455,48 +455,48 @@ int rcOffsetPoly(const float* verts, const int nverts, const float offset,
 		const int a = (i+nverts-1) % nverts;
 		const int b = i;
 		const int c = (i+1) % nverts;
-		const float* va = &verts[a*3];
-		const float* vb = &verts[b*3];
-		const float* vc = &verts[c*3];
-		float dx0 = vb[0] - va[0];
-		float dy0 = vb[2] - va[2];
-		float d0 = dx0*dx0 + dy0*dy0;
-		if (d0 > 1e-6f)
+		const double* va = &verts[a*3];
+		const double* vb = &verts[b*3];
+		const double* vc = &verts[c*3];
+		double dx0 = vb[0] - va[0];
+		double dy0 = vb[2] - va[2];
+		double d0 = dx0*dx0 + dy0*dy0;
+		if (d0 > 1e-6)
 		{
-			d0 = 1.0f/rcSqrt(d0);
+			d0 = 1.0/rcSqrt(d0);
 			dx0 *= d0;
 			dy0 *= d0;
 		}
-		float dx1 = vc[0] - vb[0];
-		float dy1 = vc[2] - vb[2];
-		float d1 = dx1*dx1 + dy1*dy1;
-		if (d1 > 1e-6f)
+		double dx1 = vc[0] - vb[0];
+		double dy1 = vc[2] - vb[2];
+		double d1 = dx1*dx1 + dy1*dy1;
+		if (d1 > 1e-6)
 		{
-			d1 = 1.0f/rcSqrt(d1);
+			d1 = 1.0/rcSqrt(d1);
 			dx1 *= d1;
 			dy1 *= d1;
 		}
-		const float dlx0 = -dy0;
-		const float dly0 = dx0;
-		const float dlx1 = -dy1;
-		const float dly1 = dx1;
-		float cross = dx1*dy0 - dx0*dy1;
-		float dmx = (dlx0 + dlx1) * 0.5f;
-		float dmy = (dly0 + dly1) * 0.5f;
-		float dmr2 = dmx*dmx + dmy*dmy;
-		bool bevel = dmr2 * MITER_LIMIT*MITER_LIMIT < 1.0f;
-		if (dmr2 > 1e-6f)
+		const double dlx0 = -dy0;
+		const double dly0 = dx0;
+		const double dlx1 = -dy1;
+		const double dly1 = dx1;
+		double cross = dx1*dy0 - dx0*dy1;
+		double dmx = (dlx0 + dlx1) * 0.5;
+		double dmy = (dly0 + dly1) * 0.5;
+		double dmr2 = dmx*dmx + dmy*dmy;
+		bool bevel = dmr2 * MITER_LIMIT*MITER_LIMIT < 1.0;
+		if (dmr2 > 1e-6)
 		{
-			const float scale = 1.0f / dmr2;
+			const double scale = 1.0 / dmr2;
 			dmx *= scale;
 			dmy *= scale;
 		}
 
-		if (bevel && cross < 0.0f)
+		if (bevel && cross < 0.0)
 		{
 			if (n+2 >= maxOutVerts)
 				return 0;
-			float d = (1.0f - (dx0*dx1 + dy0*dy1))*0.5f;
+			double d = (1.0 - (dx0*dx1 + dy0*dy1))*0.5;
 			outVerts[n*3+0] = vb[0] + (-dlx0+dx0*d)*offset;
 			outVerts[n*3+1] = vb[1];
 			outVerts[n*3+2] = vb[2] + (-dly0+dy0*d)*offset;
@@ -526,22 +526,22 @@ int rcOffsetPoly(const float* verts, const int nverts, const float offset,
 /// The value of spacial parameters are in world units.
 /// 
 /// @see rcCompactHeightfield, rcMedianFilterWalkableArea
-void rcMarkCylinderArea(rcContext* ctx, const float* pos,
-						const float r, const float h, unsigned char areaId,
+void rcMarkCylinderArea(rcContext* ctx, const double* pos,
+						const double r, const double h, unsigned char areaId,
 						rcCompactHeightfield& chf)
 {
 	rcAssert(ctx);
 	
 	rcScopedTimer timer(ctx, RC_TIMER_MARK_CYLINDER_AREA);
 	
-	float bmin[3], bmax[3];
+	double bmin[3], bmax[3];
 	bmin[0] = pos[0] - r;
 	bmin[1] = pos[1];
 	bmin[2] = pos[2] - r;
 	bmax[0] = pos[0] + r;
 	bmax[1] = pos[1] + h;
 	bmax[2] = pos[2] + r;
-	const float r2 = r*r;
+	const double r2 = r*r;
 	
 	int minx = (int)((bmin[0]-chf.bmin[0])/chf.cs);
 	int miny = (int)((bmin[1]-chf.bmin[1])/chf.ch);
@@ -575,10 +575,10 @@ void rcMarkCylinderArea(rcContext* ctx, const float* pos,
 				
 				if ((int)s.y >= miny && (int)s.y <= maxy)
 				{
-					const float sx = chf.bmin[0] + (x+0.5f)*chf.cs; 
-					const float sz = chf.bmin[2] + (z+0.5f)*chf.cs; 
-					const float dx = sx - pos[0];
-					const float dz = sz - pos[2];
+					const double sx = chf.bmin[0] + (x+0.5)*chf.cs;
+					const double sz = chf.bmin[2] + (z+0.5)*chf.cs;
+					const double dx = sx - pos[0];
+					const double dz = sz - pos[2];
 					
 					if (dx*dx + dz*dz < r2)
 					{

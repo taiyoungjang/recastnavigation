@@ -79,7 +79,7 @@ void OffMeshConnectionTool::handleMenu()
 		m_bidir = true;
 }
 
-void OffMeshConnectionTool::handleClick(const float* /*s*/, const float* p, bool shift)
+void OffMeshConnectionTool::handleClick(const double* /*s*/, const double* p, bool shift)
 {
 	if (!m_sample) return;
 	InputGeom* geom = m_sample->getInputGeom();
@@ -89,13 +89,13 @@ void OffMeshConnectionTool::handleClick(const float* /*s*/, const float* p, bool
 	{
 		// Delete
 		// Find nearest link end-point
-		float nearestDist = FLT_MAX;
+		double nearestDist = DBL_MAX;
 		int nearestIndex = -1;
-		const float* verts = geom->getOffMeshConnectionVerts();
+		const double* verts = geom->getOffMeshConnectionVerts();
 		for (int i = 0; i < geom->getOffMeshConnectionCount()*2; ++i)
 		{
-			const float* v = &verts[i*3];
-			float d = rcVdistSqr(p, v);
+			const double* v = &verts[i*3];
+			double d = rcVdistSqr(p, v);
 			if (d < nearestDist)
 			{
 				nearestDist = d;
@@ -104,7 +104,7 @@ void OffMeshConnectionTool::handleClick(const float* /*s*/, const float* p, bool
 		}
 		// If end point close enough, delete it.
 		if (nearestIndex != -1 &&
-			sqrtf(nearestDist) < m_sample->getAgentRadius())
+			sqrt(nearestDist) < m_sample->getAgentRadius())
 		{
 			geom->deleteOffMeshConnection(nearestIndex);
 		}
@@ -136,17 +136,17 @@ void OffMeshConnectionTool::handleStep()
 {
 }
 
-void OffMeshConnectionTool::handleUpdate(const float /*dt*/)
+void OffMeshConnectionTool::handleUpdate(const double /*dt*/)
 {
 }
 
 void OffMeshConnectionTool::handleRender()
 {
 	duDebugDraw& dd = m_sample->getDebugDraw();
-	const float s = m_sample->getAgentRadius();
+	const double s = m_sample->getAgentRadius();
 	
 	if (m_hitPosSet)
-		duDebugDrawCross(&dd, m_hitPos[0],m_hitPos[1]+0.1f,m_hitPos[2], s, duRGBA(0,0,0,128), 2.0f);
+		duDebugDrawCross(&dd, m_hitPos[0],m_hitPos[1]+0.1,m_hitPos[2], s, duRGBA(0,0,0,128), 2.0);
 
 	InputGeom* geom = m_sample->getInputGeom();
 	if (geom)

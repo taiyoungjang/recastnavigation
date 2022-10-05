@@ -1114,9 +1114,9 @@ bool rcBuildPolyMesh(rcContext* ctx, rcContourSet& cset, const int nvp, rcPolyMe
 		if (ntris <= 0)
 		{
 			// Bad triangulation, should not happen.
-/*			printf("\tconst float bmin[3] = {%ff,%ff,%ff};\n", cset.bmin[0], cset.bmin[1], cset.bmin[2]);
-			printf("\tconst float cs = %ff;\n", cset.cs);
-			printf("\tconst float ch = %ff;\n", cset.ch);
+/*			printf("\tconst float bmin[3] = {%lff,%lff,%lff};\n", cset.bmin[0], cset.bmin[1], cset.bmin[2]);
+			printf("\tconst float cs = %lff;\n", cset.cs);
+			printf("\tconst float ch = %lff;\n", cset.ch);
 			printf("\tconst int verts[] = {\n");
 			for (int k = 0; k < cont.nverts; ++k)
 			{
@@ -1403,13 +1403,13 @@ bool rcMergePolyMeshes(rcContext* ctx, rcPolyMesh** meshes, const int nmeshes, r
 	{
 		const rcPolyMesh* pmesh = meshes[i];
 		
-		const unsigned short ox = (unsigned short)floorf((pmesh->bmin[0]-mesh.bmin[0])/mesh.cs+0.5f);
-		const unsigned short oz = (unsigned short)floorf((pmesh->bmin[2]-mesh.bmin[2])/mesh.cs+0.5f);
+		const unsigned short ox = (unsigned short)floor((pmesh->bmin[0]-mesh.bmin[0])/mesh.cs+0.5);
+		const unsigned short oz = (unsigned short)floor((pmesh->bmin[2]-mesh.bmin[2])/mesh.cs+0.5);
 		
 		bool isMinX = (ox == 0);
 		bool isMinZ = (oz == 0);
-		bool isMaxX = ((unsigned short)floorf((mesh.bmax[0] - pmesh->bmax[0]) / mesh.cs + 0.5f)) == 0;
-		bool isMaxZ = ((unsigned short)floorf((mesh.bmax[2] - pmesh->bmax[2]) / mesh.cs + 0.5f)) == 0;
+		bool isMaxX = ((unsigned short)floor((mesh.bmax[0] - pmesh->bmax[0]) / mesh.cs + 0.5)) == 0;
+		bool isMaxZ = ((unsigned short)floor((mesh.bmax[2] - pmesh->bmax[2]) / mesh.cs + 0.5)) == 0;
 		bool isOnBorder = (isMinX || isMinZ || isMaxX || isMaxZ);
 
 		for (int j = 0; j < pmesh->nverts; ++j)

@@ -38,17 +38,17 @@
 // Quick and dirty convex hull.
 
 // Returns true if 'c' is left of line 'a'-'b'.
-inline bool left(const float* a, const float* b, const float* c)
+inline bool left(const double* a, const double* b, const double* c)
 { 
-	const float u1 = b[0] - a[0];
-	const float v1 = b[2] - a[2];
-	const float u2 = c[0] - a[0];
-	const float v2 = c[2] - a[2];
+	const double u1 = b[0] - a[0];
+	const double v1 = b[2] - a[2];
+	const double u2 = c[0] - a[0];
+	const double v2 = c[2] - a[2];
 	return u1 * v2 - v1 * u2 < 0;
 }
 
 // Returns true if 'a' is more lower-left than 'b'.
-inline bool cmppt(const float* a, const float* b)
+inline bool cmppt(const double* a, const double* b)
 {
 	if (a[0] < b[0]) return true;
 	if (a[0] > b[0]) return false;
@@ -59,7 +59,7 @@ inline bool cmppt(const float* a, const float* b)
 // Calculates convex hull on xz-plane of points on 'pts',
 // stores the indices of the resulting hull in 'out' and
 // returns number of points on hull.
-static int convexhull(const float* pts, int npts, int* out)
+static int convexhull(const double* pts, int npts, int* out)
 {
 	// Find lower-leftmost point.
 	int hull = 0;
@@ -83,13 +83,13 @@ static int convexhull(const float* pts, int npts, int* out)
 	return i;
 }
 
-static int pointInPoly(int nvert, const float* verts, const float* p)
+static int pointInPoly(int nvert, const double* verts, const double* p)
 {
 	int i, j, c = 0;
 	for (i = 0, j = nvert-1; i < nvert; j = i++)
 	{
-		const float* vi = &verts[i*3];
-		const float* vj = &verts[j*3];
+		const double* vi = &verts[i*3];
+		const double* vj = &verts[j*3];
 		if (((vi[2] > p[2]) != (vj[2] > p[2])) &&
 			(p[0] < (vj[0]-vi[0]) * (p[2]-vi[2]) / (vj[2]-vi[2]) + vi[0]) )
 			c = !c;
@@ -101,9 +101,9 @@ static int pointInPoly(int nvert, const float* verts, const float* p)
 ConvexVolumeTool::ConvexVolumeTool() :
 	m_sample(0),
 	m_areaType(SAMPLE_POLYAREA_GRASS),
-	m_polyOffset(0.0f),
-	m_boxHeight(6.0f),
-	m_boxDescent(1.0f),
+	m_polyOffset(0.0),
+	m_boxHeight(6.0),
+	m_boxDescent(1.0),
 	m_npts(0),
 	m_nhull(0)
 {
@@ -122,9 +122,9 @@ void ConvexVolumeTool::reset()
 
 void ConvexVolumeTool::handleMenu()
 {
-	imguiSlider("Shape Height", &m_boxHeight, 0.1f, 20.0f, 0.1f);
-	imguiSlider("Shape Descent", &m_boxDescent, 0.1f, 20.0f, 0.1f);
-	imguiSlider("Poly Offset", &m_polyOffset, 0.0f, 10.0f, 0.1f);
+	imguiSlider("Shape Height", &m_boxHeight, 0.1, 20.0, 0.1);
+	imguiSlider("Shape Descent", &m_boxDescent, 0.1, 20.0, 0.1);
+	imguiSlider("Poly Offset", &m_polyOffset, 0.0, 10.0, 0.1);
 
 	imguiSeparator();
 
@@ -153,7 +153,7 @@ void ConvexVolumeTool::handleMenu()
 	}
 }
 
-void ConvexVolumeTool::handleClick(const float* /*s*/, const float* p, bool shift)
+void ConvexVolumeTool::handleClick(const double* /*s*/, const double* p, bool shift)
 {
 	if (!m_sample) return;
 	InputGeom* geom = m_sample->getInputGeom();
@@ -183,24 +183,24 @@ void ConvexVolumeTool::handleClick(const float* /*s*/, const float* p, bool shif
 		// Create
 
 		// If clicked on that last pt, create the shape.
-		if (m_npts && rcVdistSqr(p, &m_pts[(m_npts-1)*3]) < rcSqr(0.2f))
+		if (m_npts && rcVdistSqr(p, &m_pts[(m_npts-1)*3]) < rcSqr(0.2))
 		{
 			if (m_nhull > 2)
 			{
 				// Create shape.
-				float verts[MAX_PTS*3];
+				double verts[MAX_PTS*3];
 				for (int i = 0; i < m_nhull; ++i)
 					rcVcopy(&verts[i*3], &m_pts[m_hull[i]*3]);
 					
-				float minh = FLT_MAX, maxh = 0;
+				double minh = DBL_MAX, maxh = 0;
 				for (int i = 0; i < m_nhull; ++i)
 					minh = rcMin(minh, verts[i*3+1]);
 				minh -= m_boxDescent;
 				maxh = minh + m_boxHeight;
 
-				if (m_polyOffset > 0.01f)
+				if (m_polyOffset > 0.01)
 				{
-					float offset[MAX_PTS*2*3];
+					double offset[MAX_PTS*2*3];
 					int noffset = rcOffsetPoly(verts, m_nhull, m_polyOffset, offset, MAX_PTS*2);
 					if (noffset > 0)
 						geom->addConvexVolume(offset, noffset, minh, maxh, (unsigned char)m_areaType);
@@ -240,7 +240,7 @@ void ConvexVolumeTool::handleStep()
 {
 }
 
-void ConvexVolumeTool::handleUpdate(const float /*dt*/)
+void ConvexVolumeTool::handleUpdate(const double /*dt*/)
 {
 }
 
@@ -249,27 +249,27 @@ void ConvexVolumeTool::handleRender()
 	duDebugDraw& dd = m_sample->getDebugDraw();
 	
 	// Find height extent of the shape.
-	float minh = FLT_MAX, maxh = 0;
+	double minh = DBL_MAX, maxh = 0;
 	for (int i = 0; i < m_npts; ++i)
 		minh = rcMin(minh, m_pts[i*3+1]);
 	minh -= m_boxDescent;
 	maxh = minh + m_boxHeight;
 
-	dd.begin(DU_DRAW_POINTS, 4.0f);
+	dd.begin(DU_DRAW_POINTS, 4.0);
 	for (int i = 0; i < m_npts; ++i)
 	{
 		unsigned int col = duRGBA(255,255,255,255);
 		if (i == m_npts-1)
 			col = duRGBA(240,32,16,255);
-		dd.vertex(m_pts[i*3+0],m_pts[i*3+1]+0.1f,m_pts[i*3+2], col);
+		dd.vertex(m_pts[i*3+0],m_pts[i*3+1]+0.1,m_pts[i*3+2], col);
 	}
 	dd.end();
 
-	dd.begin(DU_DRAW_LINES, 2.0f);
+	dd.begin(DU_DRAW_LINES, 2.0);
 	for (int i = 0, j = m_nhull-1; i < m_nhull; j = i++)
 	{
-		const float* vi = &m_pts[m_hull[j]*3];
-		const float* vj = &m_pts[m_hull[i]*3];
+		const double* vi = &m_pts[m_hull[j]*3];
+		const double* vj = &m_pts[m_hull[i]*3];
 		dd.vertex(vj[0],minh,vj[2], duRGBA(255,255,255,64));
 		dd.vertex(vi[0],minh,vi[2], duRGBA(255,255,255,64));
 		dd.vertex(vj[0],maxh,vj[2], duRGBA(255,255,255,64));

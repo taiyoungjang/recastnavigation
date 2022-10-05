@@ -25,44 +25,44 @@
 #include <float.h>
 #include <new>
 
-static const float DT_PI = 3.14159265f;
+static const double DT_PI = 3.141592653589793238462643383279502884;
 
-static int sweepCircleCircle(const float* c0, const float r0, const float* v,
-							 const float* c1, const float r1,
-							 float& tmin, float& tmax)
+static int sweepCircleCircle(const double* c0, const double r0, const double* v,
+							 const double* c1, const double r1,
+							 double& tmin, double& tmax)
 {
-	static const float EPS = 0.0001f;
-	float s[3];
+	static const double EPS = 0.0001;
+	double s[3];
 	dtVsub(s,c1,c0);
-	float r = r0+r1;
-	float c = dtVdot2D(s,s) - r*r;
-	float a = dtVdot2D(v,v);
+	double r = r0+r1;
+	double c = dtVdot2D(s,s) - r*r;
+	double a = dtVdot2D(v,v);
 	if (a < EPS) return 0;	// not moving
 	
 	// Overlap, calc time to exit.
-	float b = dtVdot2D(v,s);
-	float d = b*b - a*c;
-	if (d < 0.0f) return 0; // no intersection.
-	a = 1.0f / a;
-	const float rd = dtMathSqrtf(d);
+	double b = dtVdot2D(v,s);
+	double d = b*b - a*c;
+	if (d < 0.0) return 0; // no intersection.
+	a = 1.0 / a;
+	const double rd = dtMathSqrtf(d);
 	tmin = (b - rd) * a;
 	tmax = (b + rd) * a;
 	return 1;
 }
 
-static int isectRaySeg(const float* ap, const float* u,
-					   const float* bp, const float* bq,
-					   float& t)
+static int isectRaySeg(const double* ap, const double* u,
+					   const double* bp, const double* bq,
+					   double& t)
 {
-	float v[3], w[3];
+	double v[3], w[3];
 	dtVsub(v,bq,bp);
 	dtVsub(w,ap,bp);
-	float d = dtVperp2D(u,v);
-	if (dtMathFabsf(d) < 1e-6f) return 0;
-	d = 1.0f/d;
+	double d = dtVperp2D(u,v);
+	if (dtMathFabsf(d) < 1e-6) return 0;
+	d = 1.0/d;
 	t = dtVperp2D(v,w) * d;
 	if (t < 0 || t > 1) return 0;
-	float s = dtVperp2D(u,w) * d;
+	double s = dtVperp2D(u,w) * d;
 	if (s < 0 || s > 1) return 0;
 	return 1;
 }
@@ -113,25 +113,25 @@ bool dtObstacleAvoidanceDebugData::init(const int maxSamples)
 	dtAssert(maxSamples);
 	m_maxSamples = maxSamples;
 
-	m_vel = (float*)dtAlloc(sizeof(float)*3*m_maxSamples, DT_ALLOC_PERM);
+	m_vel = (double*)dtAlloc(sizeof(double)*3*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_vel)
 		return false;
-	m_pen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+	m_pen = (double*)dtAlloc(sizeof(double)*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_pen)
 		return false;
-	m_ssize = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+	m_ssize = (double*)dtAlloc(sizeof(double)*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_ssize)
 		return false;
-	m_vpen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+	m_vpen = (double*)dtAlloc(sizeof(double)*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_vpen)
 		return false;
-	m_vcpen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+	m_vcpen = (double*)dtAlloc(sizeof(double)*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_vcpen)
 		return false;
-	m_spen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+	m_spen = (double*)dtAlloc(sizeof(double)*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_spen)
 		return false;
-	m_tpen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+	m_tpen = (double*)dtAlloc(sizeof(double)*m_maxSamples, DT_ALLOC_PERM);
 	if (!m_tpen)
 		return false;
 	
@@ -143,8 +143,8 @@ void dtObstacleAvoidanceDebugData::reset()
 	m_nsamples = 0;
 }
 
-void dtObstacleAvoidanceDebugData::addSample(const float* vel, const float ssize, const float pen,
-											 const float vpen, const float vcpen, const float spen, const float tpen)
+void dtObstacleAvoidanceDebugData::addSample(const double* vel, const double ssize, const double pen,
+											 const double vpen, const double vcpen, const double spen, const double tpen)
 {
 	if (m_nsamples >= m_maxSamples)
 		return;
@@ -165,20 +165,20 @@ void dtObstacleAvoidanceDebugData::addSample(const float* vel, const float ssize
 	m_nsamples++;
 }
 
-static void normalizeArray(float* arr, const int n)
+static void normalizeArray(double* arr, const int n)
 {
 	// Normalize penaly range.
-	float minPen = FLT_MAX;
-	float maxPen = -FLT_MAX;
+	double minPen = DBL_MAX;
+	double maxPen = -DBL_MAX;
 	for (int i = 0; i < n; ++i)
 	{
 		minPen = dtMin(minPen, arr[i]);
 		maxPen = dtMax(maxPen, arr[i]);
 	}
-	const float penRange = maxPen-minPen;
-	const float s = penRange > 0.001f ? (1.0f / penRange) : 1;
+	const double penRange = maxPen-minPen;
+	const double s = penRange > 0.001 ? (1.0 / penRange) : 1;
 	for (int i = 0; i < n; ++i)
-		arr[i] = dtClamp((arr[i]-minPen)*s, 0.0f, 1.0f);
+		arr[i] = dtClamp((arr[i]-minPen)*s, 0.0, 1.0);
 }
 
 void dtObstacleAvoidanceDebugData::normalizeSamples()
@@ -250,8 +250,8 @@ void dtObstacleAvoidanceQuery::reset()
 	m_nsegments = 0;
 }
 
-void dtObstacleAvoidanceQuery::addCircle(const float* pos, const float rad,
-										 const float* vel, const float* dvel)
+void dtObstacleAvoidanceQuery::addCircle(const double* pos, const double rad,
+										 const double* vel, const double* dvel)
 {
 	if (m_ncircles >= m_maxCircles)
 		return;
@@ -263,7 +263,7 @@ void dtObstacleAvoidanceQuery::addCircle(const float* pos, const float rad,
 	dtVcopy(cir->dvel, dvel);
 }
 
-void dtObstacleAvoidanceQuery::addSegment(const float* p, const float* q)
+void dtObstacleAvoidanceQuery::addSegment(const double* p, const double* q)
 {
 	if (m_nsegments >= m_maxSegments)
 		return;
@@ -273,7 +273,7 @@ void dtObstacleAvoidanceQuery::addSegment(const float* p, const float* q)
 	dtVcopy(seg->q, q);
 }
 
-void dtObstacleAvoidanceQuery::prepare(const float* pos, const float* dvel)
+void dtObstacleAvoidanceQuery::prepare(const double* pos, const double* dvel)
 {
 	// Prepare obstacles
 	for (int i = 0; i < m_ncircles; ++i)
@@ -281,17 +281,17 @@ void dtObstacleAvoidanceQuery::prepare(const float* pos, const float* dvel)
 		dtObstacleCircle* cir = &m_circles[i];
 		
 		// Side
-		const float* pa = pos;
-		const float* pb = cir->p;
+		const double* pa = pos;
+		const double* pb = cir->p;
 		
-		const float orig[3] = {0,0,0};
-		float dv[3];
+		const double orig[3] = {0,0,0};
+		double dv[3];
 		dtVsub(cir->dp,pb,pa);
 		dtVnormalize(cir->dp);
 		dtVsub(dv, cir->dvel, dvel);
 		
-		const float a = dtTriArea2D(orig, cir->dp,dv);
-		if (a < 0.01f)
+		const double a = dtTriArea2D(orig, cir->dp,dv);
+		if (a < 0.01)
 		{
 			cir->np[0] = -cir->dp[2];
 			cir->np[2] = cir->dp[0];
@@ -308,8 +308,8 @@ void dtObstacleAvoidanceQuery::prepare(const float* pos, const float* dvel)
 		dtObstacleSegment* seg = &m_segments[i];
 		
 		// Precalc if the agent is really close to the segment.
-		const float r = 0.01f;
-		float t;
+		const double r = 0.01;
+		double t;
 		seg->touch = dtDistancePtSegSqr2D(pos, seg->p, seg->q, t) < dtSqr(r);
 	}	
 }
@@ -321,54 +321,55 @@ void dtObstacleAvoidanceQuery::prepare(const float* pos, const float* dvel)
  * @param dvel desired velocity
  * @param minPenalty threshold penalty for early out
  */
-float dtObstacleAvoidanceQuery::processSample(const float* vcand, const float cs,
-											  const float* pos, const float rad,
-											  const float* vel, const float* dvel,
-											  const float minPenalty,
+double dtObstacleAvoidanceQuery::processSample(const double* vcand, const double cs,
+											  const double* pos, const double rad,
+											  const double* vel, const double* dvel,
+											  const double minPenalty,
 											  dtObstacleAvoidanceDebugData* debug)
 {
 	// penalty for straying away from the desired and current velocities
-	const float vpen = m_params.weightDesVel * (dtVdist2D(vcand, dvel) * m_invVmax);
-	const float vcpen = m_params.weightCurVel * (dtVdist2D(vcand, vel) * m_invVmax);
+	const double vpen = m_params.weightDesVel * (dtVdist2D(vcand, dvel) * m_invVmax);
+	const double vcpen = m_params.weightCurVel * (dtVdist2D(vcand, vel) * m_invVmax);
 
 	// find the threshold hit time to bail out based on the early out penalty
 	// (see how the penalty is calculated below to understnad)
-	float minPen = minPenalty - vpen - vcpen;
-	float tThresold = (m_params.weightToi / minPen - 0.1f) * m_params.horizTime;
+	double minPen = minPenalty - vpen - vcpen;
+	double tThresold = (m_params.weightToi / minPen - 0.1) * m_params.horizTime;
 	if (tThresold - m_params.horizTime > -FLT_EPSILON)
 		return minPenalty; // already too much
 
 	// Find min time of impact and exit amongst all obstacles.
-	float tmin = m_params.horizTime;
-	float side = 0;
+	double tmin = m_params.horizTime;
+	double side = 0;
 	int nside = 0;
-	
+	const double zero = 0.0;
+    const double one = 1.0;
 	for (int i = 0; i < m_ncircles; ++i)
 	{
 		const dtObstacleCircle* cir = &m_circles[i];
 			
 		// RVO
-		float vab[3];
+		double vab[3];
 		dtVscale(vab, vcand, 2);
 		dtVsub(vab, vab, vel);
 		dtVsub(vab, vab, cir->vel);
 		
 		// Side
-		side += dtClamp(dtMin(dtVdot2D(cir->dp,vab)*0.5f+0.5f, dtVdot2D(cir->np,vab)*2), 0.0f, 1.0f);
+		side += dtClamp(dtMin(dtVdot2D(cir->dp,vab)*0.5+0.5, dtVdot2D(cir->np,vab)*2), zero, one);
 		nside++;
 		
-		float htmin = 0, htmax = 0;
+		double htmin = 0, htmax = 0;
 		if (!sweepCircleCircle(pos,rad, vab, cir->p,cir->rad, htmin, htmax))
 			continue;
 		
 		// Handle overlapping obstacles.
-		if (htmin < 0.0f && htmax > 0.0f)
+		if (htmin < 0.0 && htmax > 0.0)
 		{
 			// Avoid more when overlapped.
-			htmin = -htmin * 0.5f;
+			htmin = -htmin * 0.5;
 		}
 		
-		if (htmin >= 0.0f)
+		if (htmin >= 0.0)
 		{
 			// The closest obstacle is somewhere ahead of us, keep track of nearest obstacle.
 			if (htmin < tmin)
@@ -383,20 +384,20 @@ float dtObstacleAvoidanceQuery::processSample(const float* vcand, const float cs
 	for (int i = 0; i < m_nsegments; ++i)
 	{
 		const dtObstacleSegment* seg = &m_segments[i];
-		float htmin = 0;
+		double htmin = 0;
 		
 		if (seg->touch)
 		{
 			// Special case when the agent is very close to the segment.
-			float sdir[3], snorm[3];
+			double sdir[3], snorm[3];
 			dtVsub(sdir, seg->q, seg->p);
 			snorm[0] = -sdir[2];
 			snorm[2] = sdir[0];
 			// If the velocity is pointing towards the segment, no collision.
-			if (dtVdot2D(snorm, vcand) < 0.0f)
+			if (dtVdot2D(snorm, vcand) < 0.0)
 				continue;
 			// Else immediate collision.
-			htmin = 0.0f;
+			htmin = 0.0;
 		}
 		else
 		{
@@ -405,7 +406,7 @@ float dtObstacleAvoidanceQuery::processSample(const float* vcand, const float cs
 		}
 		
 		// Avoid less when facing walls.
-		htmin *= 2.0f;
+		htmin *= 2.0;
 		
 		// The closest obstacle is somewhere ahead of us, keep track of nearest obstacle.
 		if (htmin < tmin)
@@ -420,10 +421,10 @@ float dtObstacleAvoidanceQuery::processSample(const float* vcand, const float cs
 	if (nside)
 		side /= nside;
 	
-	const float spen = m_params.weightSide * side;
-	const float tpen = m_params.weightToi * (1.0f/(0.1f+tmin*m_invHorizTime));
+	const double spen = m_params.weightSide * side;
+	const double tpen = m_params.weightToi * (1.0/(0.1+tmin*m_invHorizTime));
 	
-	const float penalty = vpen + vcpen + spen + tpen;
+	const double penalty = vpen + vcpen + spen + tpen;
 	
 	// Store different penalties for debug viewing
 	if (debug)
@@ -432,43 +433,43 @@ float dtObstacleAvoidanceQuery::processSample(const float* vcand, const float cs
 	return penalty;
 }
 
-int dtObstacleAvoidanceQuery::sampleVelocityGrid(const float* pos, const float rad, const float vmax,
-												 const float* vel, const float* dvel, float* nvel,
+int dtObstacleAvoidanceQuery::sampleVelocityGrid(const double* pos, const double rad, const double vmax,
+												 const double* vel, const double* dvel, double* nvel,
 												 const dtObstacleAvoidanceParams* params,
 												 dtObstacleAvoidanceDebugData* debug)
 {
 	prepare(pos, dvel);
 	
 	memcpy(&m_params, params, sizeof(dtObstacleAvoidanceParams));
-	m_invHorizTime = 1.0f / m_params.horizTime;
+	m_invHorizTime = 1.0 / m_params.horizTime;
 	m_vmax = vmax;
-	m_invVmax = vmax > 0 ? 1.0f / vmax : FLT_MAX;
+	m_invVmax = vmax > 0 ? 1.0 / vmax : DBL_MAX;
 	
 	dtVset(nvel, 0,0,0);
 	
 	if (debug)
 		debug->reset();
 
-	const float cvx = dvel[0] * m_params.velBias;
-	const float cvz = dvel[2] * m_params.velBias;
-	const float cs = vmax * 2 * (1 - m_params.velBias) / (float)(m_params.gridSize-1);
-	const float half = (m_params.gridSize-1)*cs*0.5f;
+	const double cvx = dvel[0] * m_params.velBias;
+	const double cvz = dvel[2] * m_params.velBias;
+	const double cs = vmax * 2 * (1 - m_params.velBias) / (double)(m_params.gridSize-1);
+	const double half = (m_params.gridSize-1)*cs*0.5;
 		
-	float minPenalty = FLT_MAX;
+	double minPenalty = DBL_MAX;
 	int ns = 0;
 		
 	for (int y = 0; y < m_params.gridSize; ++y)
 	{
 		for (int x = 0; x < m_params.gridSize; ++x)
 		{
-			float vcand[3];
+			double vcand[3];
 			vcand[0] = cvx + x*cs - half;
 			vcand[1] = 0;
 			vcand[2] = cvz + y*cs - half;
 			
 			if (dtSqr(vcand[0])+dtSqr(vcand[2]) > dtSqr(vmax+cs/2)) continue;
 			
-			const float penalty = processSample(vcand, cs, pos,rad,vel,dvel, minPenalty, debug);
+			const double penalty = processSample(vcand, cs, pos,rad,vel,dvel, minPenalty, debug);
 			ns++;
 			if (penalty < minPenalty)
 			{
@@ -483,38 +484,38 @@ int dtObstacleAvoidanceQuery::sampleVelocityGrid(const float* pos, const float r
 
 
 // vector normalization that ignores the y-component.
-inline void dtNormalize2D(float* v)
+inline void dtNormalize2D(double* v)
 {
-	float d = dtMathSqrtf(v[0] * v[0] + v[2] * v[2]);
+	double d = dtMathSqrtf(v[0] * v[0] + v[2] * v[2]);
 	if (d==0)
 		return;
-	d = 1.0f / d;
+	d = 1.0 / d;
 	v[0] *= d;
 	v[2] *= d;
 }
 
 // vector normalization that ignores the y-component.
-inline void dtRorate2D(float* dest, const float* v, float ang)
+inline void dtRorate2D(double* dest, const double* v, double ang)
 {
-	float c = cosf(ang);
-	float s = sinf(ang);
+	double c = cos(ang);
+	double s = sin(ang);
 	dest[0] = v[0]*c - v[2]*s;
 	dest[2] = v[0]*s + v[2]*c;
 	dest[1] = v[1];
 }
 
 
-int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const float* pos, const float rad, const float vmax,
-													 const float* vel, const float* dvel, float* nvel,
+int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const double* pos, const double rad, const double vmax,
+													 const double* vel, const double* dvel, double* nvel,
 													 const dtObstacleAvoidanceParams* params,
 													 dtObstacleAvoidanceDebugData* debug)
 {
 	prepare(pos, dvel);
 	
 	memcpy(&m_params, params, sizeof(dtObstacleAvoidanceParams));
-	m_invHorizTime = 1.0f / m_params.horizTime;
+	m_invHorizTime = 1.0 / m_params.horizTime;
 	m_vmax = vmax;
-	m_invVmax = vmax > 0 ? 1.0f / vmax : FLT_MAX;
+	m_invVmax = vmax > 0 ? 1.0 / vmax : DBL_MAX;
 	
 	dtVset(nvel, 0,0,0);
 	
@@ -522,7 +523,7 @@ int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const float* pos, const flo
 		debug->reset();
 
 	// Build sampling pattern aligned to desired velocity.
-	float pat[(DT_MAX_PATTERN_DIVS*DT_MAX_PATTERN_RINGS+1)*2];
+	double pat[(DT_MAX_PATTERN_DIVS*DT_MAX_PATTERN_RINGS+1)*2];
 	int npat = 0;
 
 	const int ndivs = (int)m_params.adaptiveDivs;
@@ -531,15 +532,15 @@ int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const float* pos, const flo
 	
 	const int nd = dtClamp(ndivs, 1, DT_MAX_PATTERN_DIVS);
 	const int nr = dtClamp(nrings, 1, DT_MAX_PATTERN_RINGS);
-	const float da = (1.0f/nd) * DT_PI*2;
-	const float ca = cosf(da);
-	const float sa = sinf(da);
+	const double da = (1.0/nd) * DT_PI*2;
+	const double ca = cos(da);
+	const double sa = sin(da);
 
 	// desired direction
-	float ddir[6];
+	double ddir[6];
 	dtVcopy(ddir, dvel);
 	dtNormalize2D(ddir);
-	dtRorate2D (ddir+3, ddir, da*0.5f); // rotated by da/2
+	dtRorate2D (ddir+3, ddir, da*0.5); // rotated by da/2
 
 	// Always add sample at zero
 	pat[npat*2+0] = 0;
@@ -548,11 +549,11 @@ int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const float* pos, const flo
 	
 	for (int j = 0; j < nr; ++j)
 	{
-		const float r = (float)(nr-j)/(float)nr;
+		const double r = (double)(nr-j)/(double)nr;
 		pat[npat*2+0] = ddir[(j%2)*3] * r;
 		pat[npat*2+1] = ddir[(j%2)*3+2] * r;
-		float* last1 = pat + npat*2;
-		float* last2 = last1;
+		double* last1 = pat + npat*2;
+		double* last2 = last1;
 		npat++;
 
 		for (int i = 1; i < nd-1; i+=2)
@@ -579,27 +580,27 @@ int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const float* pos, const flo
 
 
 	// Start sampling.
-	float cr = vmax * (1.0f - m_params.velBias);
-	float res[3];
+	double cr = vmax * (1.0 - m_params.velBias);
+	double res[3];
 	dtVset(res, dvel[0] * m_params.velBias, 0, dvel[2] * m_params.velBias);
 	int ns = 0;
 
 	for (int k = 0; k < depth; ++k)
 	{
-		float minPenalty = FLT_MAX;
-		float bvel[3];
+		double minPenalty = DBL_MAX;
+		double bvel[3];
 		dtVset(bvel, 0,0,0);
 		
 		for (int i = 0; i < npat; ++i)
 		{
-			float vcand[3];
+			double vcand[3];
 			vcand[0] = res[0] + pat[i*2+0]*cr;
 			vcand[1] = 0;
 			vcand[2] = res[2] + pat[i*2+1]*cr;
 			
-			if (dtSqr(vcand[0])+dtSqr(vcand[2]) > dtSqr(vmax+0.001f)) continue;
+			if (dtSqr(vcand[0])+dtSqr(vcand[2]) > dtSqr(vmax+0.001)) continue;
 			
-			const float penalty = processSample(vcand,cr/10, pos,rad,vel,dvel, minPenalty, debug);
+			const double penalty = processSample(vcand,cr/10, pos,rad,vel,dvel, minPenalty, debug);
 			ns++;
 			if (penalty < minPenalty)
 			{
@@ -610,7 +611,7 @@ int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const float* pos, const flo
 
 		dtVcopy(res, bvel);
 
-		cr *= 0.5f;
+		cr *= 0.5;
 	}	
 	
 	dtVcopy(nvel, res);

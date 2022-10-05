@@ -486,7 +486,7 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, rcCompactHeightfield& chf,
 	const int lh = h - borderSize*2;
 
 	// Build contracted bbox for layers.
-	float bmin[3], bmax[3];
+	double bmin[3], bmax[3];
 	rcVcopy(bmin, chf.bmin);
 	rcVcopy(bmax, chf.bmax);
 	bmin[0] += borderSize*chf.cs;

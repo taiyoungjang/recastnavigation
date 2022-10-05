@@ -34,7 +34,7 @@ struct dtTileCacheLayerHeader
 	int magic;								///< Data magic
 	int version;							///< Data version
 	int tx,ty,tlayer;
-	float bmin[3], bmax[3];
+	double bmin[3], bmax[3];
 	unsigned short hmin, hmax;				///< Height min/max range
 	unsigned char width, height;			///< Dimension of the layer.
 	unsigned char minx, maxx, miny, maxy;	///< Usable sub-region.
@@ -124,14 +124,14 @@ void dtFreeTileCacheContourSet(dtTileCacheAlloc* alloc, dtTileCacheContourSet* c
 dtTileCachePolyMesh* dtAllocTileCachePolyMesh(dtTileCacheAlloc* alloc);
 void dtFreeTileCachePolyMesh(dtTileCacheAlloc* alloc, dtTileCachePolyMesh* lmesh);
 
-dtStatus dtMarkCylinderArea(dtTileCacheLayer& layer, const float* orig, const float cs, const float ch,
-							const float* pos, const float radius, const float height, const unsigned char areaId);
+dtStatus dtMarkCylinderArea(dtTileCacheLayer& layer, const double* orig, const double cs, const double ch,
+							const double* pos, const double radius, const double height, const unsigned char areaId);
 
-dtStatus dtMarkBoxArea(dtTileCacheLayer& layer, const float* orig, const float cs, const float ch,
-					   const float* bmin, const float* bmax, const unsigned char areaId);
+dtStatus dtMarkBoxArea(dtTileCacheLayer& layer, const double* orig, const double cs, const double ch,
+					   const double* bmin, const double* bmax, const unsigned char areaId);
 
-dtStatus dtMarkBoxArea(dtTileCacheLayer& layer, const float* orig, const float cs, const float ch,
-					   const float* center, const float* halfExtents, const float* rotAux, const unsigned char areaId);
+dtStatus dtMarkBoxArea(dtTileCacheLayer& layer, const double* orig, const double cs, const double ch,
+					   const double* center, const double* halfExtents, const double* rotAux, const unsigned char areaId);
 
 dtStatus dtBuildTileCacheRegions(dtTileCacheAlloc* alloc,
 								 dtTileCacheLayer& layer,
@@ -139,7 +139,7 @@ dtStatus dtBuildTileCacheRegions(dtTileCacheAlloc* alloc,
 
 dtStatus dtBuildTileCacheContours(dtTileCacheAlloc* alloc,
 								  dtTileCacheLayer& layer,
-								  const int walkableClimb, 	const float maxError,
+								  const int walkableClimb, 	const double maxError,
 								  dtTileCacheContourSet& lcset);
 
 dtStatus dtBuildTileCachePolyMesh(dtTileCacheAlloc* alloc,

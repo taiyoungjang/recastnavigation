@@ -54,12 +54,12 @@ bool imguiCheck(const char* text, bool checked, bool enabled = true);
 bool imguiCollapse(const char* text, const char* subtext, bool checked, bool enabled = true);
 void imguiLabel(const char* text);
 void imguiValue(const char* text);
-bool imguiSlider(const char* text, float* val, float vmin, float vmax, float vinc, bool enabled = true);
+bool imguiSlider(const char* text, double* val, double vmin, double vmax, double vinc, bool enabled = true);
 
 void imguiDrawText(int x, int y, int align, const char* text, unsigned int color);
-void imguiDrawLine(float x0, float y0, float x1, float y1, float r, unsigned int color);
-void imguiDrawRoundedRect(float x, float y, float w, float h, float r, unsigned int color);
-void imguiDrawRect(float x, float y, float w, float h, unsigned int color);
+void imguiDrawLine(double x0, double y0, double x1, double y1, double r, unsigned int color);
+void imguiDrawRoundedRect(double x, double y, double w, double h, double r, unsigned int color);
+void imguiDrawRect(double x, double y, double w, double h, unsigned int color);
 
 // Pull render interface.
 enum imguiGfxCmdType

@@ -4,12 +4,12 @@
 class ValueHistory
 {
 	static const int MAX_HISTORY = 256;
-	float m_samples[MAX_HISTORY];
+	double m_samples[MAX_HISTORY];
 	int m_hsamples;
 public:
 	ValueHistory();
 
-	inline void addSample(const float val)
+	inline void addSample(const double val)
 	{
 		m_hsamples = (m_hsamples+MAX_HISTORY-1) % MAX_HISTORY;
 		m_samples[m_hsamples] = val;
@@ -20,23 +20,23 @@ public:
 		return MAX_HISTORY;
 	}
 	
-	inline float getSample(const int i) const
+	inline double getSample(const int i) const
 	{
 		return m_samples[(m_hsamples+i) % MAX_HISTORY];
 	}
 	
-	float getSampleMin() const;
-	float getSampleMax() const;
-	float getAverage() const;
+	double getSampleMin() const;
+	double getSampleMax() const;
+	double getAverage() const;
 };
 
 struct GraphParams
 {
 	void setRect(int ix, int iy, int iw, int ih, int ipad);
-	void setValueRange(float ivmin, float ivmax, int indiv, const char* iunits);
+	void setValueRange(double ivmin, double ivmax, int indiv, const char* iunits);
 	
 	int x, y, w, h, pad;
-	float vmin, vmax;
+	double vmin, vmax;
 	int ndiv;
 	char units[16];
 };

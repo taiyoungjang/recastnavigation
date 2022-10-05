@@ -113,11 +113,11 @@ void Sample::handleRender()
 	
 	// Draw mesh
 	duDebugDrawTriMesh(&m_dd, m_geom->getMesh()->getVerts(), m_geom->getMesh()->getVertCount(),
-					   m_geom->getMesh()->getTris(), m_geom->getMesh()->getNormals(), m_geom->getMesh()->getTriCount(), 0, 1.0f);
+					   m_geom->getMesh()->getTris(), m_geom->getMesh()->getNormals(), m_geom->getMesh()->getTriCount(), 0, 1.0);
 	// Draw bounds
-	const float* bmin = m_geom->getMeshBoundsMin();
-	const float* bmax = m_geom->getMeshBoundsMax();
-	duDebugDrawBoxWire(&m_dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0f);
+	const double* bmin = m_geom->getMeshBoundsMin();
+	const double* bmax = m_geom->getMeshBoundsMax();
+	duDebugDrawBoxWire(&m_dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0);
 }
 
 void Sample::handleRenderOverlay(double* /*proj*/, double* /*model*/, int* /*view*/)
@@ -169,32 +169,32 @@ void Sample::collectSettings(BuildSettings& settings)
 
 void Sample::resetCommonSettings()
 {
-	m_cellSize = 0.3f;
-	m_cellHeight = 0.2f;
-	m_agentHeight = 2.0f;
-	m_agentRadius = 0.6f;
-	m_agentMaxClimb = 0.9f;
-	m_agentMaxSlope = 45.0f;
+	m_cellSize = 0.3;
+	m_cellHeight = 0.2;
+	m_agentHeight = 2.0;
+	m_agentRadius = 0.6;
+	m_agentMaxClimb = 0.9;
+	m_agentMaxSlope = 45.0;
 	m_regionMinSize = 8;
 	m_regionMergeSize = 20;
-	m_edgeMaxLen = 12.0f;
-	m_edgeMaxError = 1.3f;
-	m_vertsPerPoly = 6.0f;
-	m_detailSampleDist = 6.0f;
-	m_detailSampleMaxError = 1.0f;
+	m_edgeMaxLen = 12.0;
+	m_edgeMaxError = 1.3;
+	m_vertsPerPoly = 6.0;
+	m_detailSampleDist = 6.0;
+	m_detailSampleMaxError = 1.0;
 	m_partitionType = SAMPLE_PARTITION_WATERSHED;
 }
 
 void Sample::handleCommonSettings()
 {
 	imguiLabel("Rasterization");
-	imguiSlider("Cell Size", &m_cellSize, 0.1f, 1.0f, 0.01f);
-	imguiSlider("Cell Height", &m_cellHeight, 0.1f, 1.0f, 0.01f);
+	imguiSlider("Cell Size", &m_cellSize, 0.1, 1.0, 0.01);
+	imguiSlider("Cell Height", &m_cellHeight, 0.1, 1.0, 0.01);
 	
 	if (m_geom)
 	{
-		const float* bmin = m_geom->getNavMeshBoundsMin();
-		const float* bmax = m_geom->getNavMeshBoundsMax();
+		const double* bmin = m_geom->getNavMeshBoundsMin();
+		const double* bmax = m_geom->getNavMeshBoundsMax();
 		int gw = 0, gh = 0;
 		rcCalcGridSize(bmin, bmax, m_cellSize, &gw, &gh);
 		char text[64];
@@ -204,15 +204,15 @@ void Sample::handleCommonSettings()
 	
 	imguiSeparator();
 	imguiLabel("Agent");
-	imguiSlider("Height", &m_agentHeight, 0.1f, 5.0f, 0.1f);
-	imguiSlider("Radius", &m_agentRadius, 0.0f, 5.0f, 0.1f);
-	imguiSlider("Max Climb", &m_agentMaxClimb, 0.1f, 5.0f, 0.1f);
-	imguiSlider("Max Slope", &m_agentMaxSlope, 0.0f, 90.0f, 1.0f);
+	imguiSlider("Height", &m_agentHeight, 0.1, 5.0, 0.1);
+	imguiSlider("Radius", &m_agentRadius, 0.0, 5.0, 0.1);
+	imguiSlider("Max Climb", &m_agentMaxClimb, 0.1, 5.0, 0.1);
+	imguiSlider("Max Slope", &m_agentMaxSlope, 0.0, 90.0, 1.0);
 	
 	imguiSeparator();
 	imguiLabel("Region");
-	imguiSlider("Min Region Size", &m_regionMinSize, 0.0f, 150.0f, 1.0f);
-	imguiSlider("Merged Region Size", &m_regionMergeSize, 0.0f, 150.0f, 1.0f);
+	imguiSlider("Min Region Size", &m_regionMinSize, 0.0, 150.0, 1.0);
+	imguiSlider("Merged Region Size", &m_regionMergeSize, 0.0, 150.0, 1.0);
 
 	imguiSeparator();
 	imguiLabel("Partitioning");
@@ -234,19 +234,19 @@ void Sample::handleCommonSettings()
 
 	imguiSeparator();
 	imguiLabel("Polygonization");
-	imguiSlider("Max Edge Length", &m_edgeMaxLen, 0.0f, 50.0f, 1.0f);
-	imguiSlider("Max Edge Error", &m_edgeMaxError, 0.1f, 3.0f, 0.1f);
-	imguiSlider("Verts Per Poly", &m_vertsPerPoly, 3.0f, 12.0f, 1.0f);		
+	imguiSlider("Max Edge Length", &m_edgeMaxLen, 0.0, 50.0, 1.0);
+	imguiSlider("Max Edge Error", &m_edgeMaxError, 0.1, 3.0, 0.1);
+	imguiSlider("Verts Per Poly", &m_vertsPerPoly, 3.0, 12.0, 1.0);
 
 	imguiSeparator();
 	imguiLabel("Detail Mesh");
-	imguiSlider("Sample Distance", &m_detailSampleDist, 0.0f, 16.0f, 1.0f);
-	imguiSlider("Max Sample Error", &m_detailSampleMaxError, 0.0f, 16.0f, 1.0f);
+	imguiSlider("Sample Distance", &m_detailSampleDist, 0.0, 16.0, 1.0);
+	imguiSlider("Max Sample Error", &m_detailSampleMaxError, 0.0, 16.0, 1.0);
 	
 	imguiSeparator();
 }
 
-void Sample::handleClick(const float* s, const float* p, bool shift)
+void Sample::handleClick(const double* s, const double* p, bool shift)
 {
 	if (m_tool)
 		m_tool->handleClick(s, p, shift);
@@ -269,7 +269,7 @@ bool Sample::handleBuild()
 	return true;
 }
 
-void Sample::handleUpdate(const float dt)
+void Sample::handleUpdate(const double dt)
 {
 	if (m_tool)
 		m_tool->handleUpdate(dt);
@@ -277,7 +277,7 @@ void Sample::handleUpdate(const float dt)
 }
 
 
-void Sample::updateToolStates(const float dt)
+void Sample::updateToolStates(const double dt)
 {
 	for (int i = 0; i < MAX_TOOLS; i++)
 	{

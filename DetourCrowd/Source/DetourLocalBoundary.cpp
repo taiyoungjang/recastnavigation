@@ -28,7 +28,7 @@ dtLocalBoundary::dtLocalBoundary() :
 	m_nsegs(0),
 	m_npolys(0)
 {
-	dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
+	dtVset(m_center, DBL_MAX,DBL_MAX,DBL_MAX);
 }
 
 dtLocalBoundary::~dtLocalBoundary()
@@ -37,12 +37,12 @@ dtLocalBoundary::~dtLocalBoundary()
 
 void dtLocalBoundary::reset()
 {
-	dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
+	dtVset(m_center, DBL_MAX,DBL_MAX,DBL_MAX);
 	m_npolys = 0;
 	m_nsegs = 0;
 }
 
-void dtLocalBoundary::addSegment(const float dist, const float* s)
+void dtLocalBoundary::addSegment(const double dist, const double* s)
 {
 	// Insert neighbour based on the distance.
 	Segment* seg = 0;
@@ -75,20 +75,20 @@ void dtLocalBoundary::addSegment(const float dist, const float* s)
 	}
 	
 	seg->d = dist;
-	memcpy(seg->s, s, sizeof(float)*6);
+	memcpy(seg->s, s, sizeof(double)*6);
 	
 	if (m_nsegs < MAX_LOCAL_SEGS)
 		m_nsegs++;
 }
 
-void dtLocalBoundary::update(dtPolyRef ref, const float* pos, const float collisionQueryRange,
+void dtLocalBoundary::update(dtPolyRef ref, const double* pos, const double collisionQueryRange,
 							 dtNavMeshQuery* navquery, const dtQueryFilter* filter)
 {
 	static const int MAX_SEGS_PER_POLY = DT_VERTS_PER_POLYGON*3;
 	
 	if (!ref)
 	{
-		dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
+		dtVset(m_center, DBL_MAX,DBL_MAX,DBL_MAX);
 		m_nsegs = 0;
 		m_npolys = 0;
 		return;
@@ -102,17 +102,17 @@ void dtLocalBoundary::update(dtPolyRef ref, const float* pos, const float collis
 	
 	// Secondly, store all polygon edges.
 	m_nsegs = 0;
-	float segs[MAX_SEGS_PER_POLY*6];
+	double segs[MAX_SEGS_PER_POLY*6];
 	int nsegs = 0;
 	for (int j = 0; j < m_npolys; ++j)
 	{
 		navquery->getPolyWallSegments(m_polys[j], filter, segs, 0, &nsegs, MAX_SEGS_PER_POLY);
 		for (int k = 0; k < nsegs; ++k)
 		{
-			const float* s = &segs[k*6];
+			const double* s = &segs[k*6];
 			// Skip too distant segments.
-			float tseg;
-			const float distSqr = dtDistancePtSegSqr2D(pos, s, s+3, tseg);
+			double tseg;
+			const double distSqr = dtDistancePtSegSqr2D(pos, s, s+3, tseg);
 			if (distSqr > dtSqr(collisionQueryRange))
 				continue;
 			addSegment(distSqr, s);

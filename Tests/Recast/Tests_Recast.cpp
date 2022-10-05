@@ -101,9 +101,9 @@ TEST_CASE("rcVcross")
 {
 	SECTION("Computes cross product")
 	{
-		float v1[3] = {3, -3, 1};
-		float v2[3] = {4, 9, 2};
-		float result[3];
+		double v1[3] = {3, -3, 1};
+		double v2[3] = {4, 9, 2};
+		double result[3];
 		rcVcross(result, v1, v2);
 		REQUIRE(result[0] == Approx(-15));
 		REQUIRE(result[1] == Approx(-2));
@@ -112,8 +112,8 @@ TEST_CASE("rcVcross")
 
 	SECTION("Cross product with itself is zero")
 	{
-		float v1[3] = {3, -3, 1};
-		float result[3];
+		double v1[3] = {3, -3, 1};
+		double result[3];
 		rcVcross(result, v1, v1);
 		REQUIRE(result[0] == Approx(0));
 		REQUIRE(result[1] == Approx(0));
@@ -125,17 +125,17 @@ TEST_CASE("rcVdot")
 {
 	SECTION("Dot normalized vector with itself")
 	{
-		float v1[] = { 1, 0, 0 };
-		float result = rcVdot(v1, v1);
+		double v1[] = { 1, 0, 0 };
+		double result = rcVdot(v1, v1);
 		REQUIRE(result == Approx(1));
 	}
 
 	SECTION("Dot zero vector with anything is zero")
 	{
-		float v1[] = { 1, 2, 3 };
-		float v2[] = { 0, 0, 0 };
+		double v1[] = { 1, 2, 3 };
+		double v2[] = { 0, 0, 0 };
 
-		float result = rcVdot(v1, v2);
+		double result = rcVdot(v1, v2);
 		REQUIRE(result == Approx(0));
 	}
 }
@@ -144,9 +144,9 @@ TEST_CASE("rcVmad")
 {
 	SECTION("scaled add two vectors")
 	{
-		float v1[3] = {1, 2, 3};
-		float v2[3] = {0, 2, 4};
-		float result[3];
+		double v1[3] = {1, 2, 3};
+		double v2[3] = {0, 2, 4};
+		double result[3];
 		rcVmad(result, v1, v2, 2);
 		REQUIRE(result[0] == Approx(1));
 		REQUIRE(result[1] == Approx(6));
@@ -155,9 +155,9 @@ TEST_CASE("rcVmad")
 
 	SECTION("second vector is scaled, first is not")
 	{
-		float v1[3] = {1, 2, 3};
-		float v2[3] = {5, 6, 7};
-		float result[3];
+		double v1[3] = {1, 2, 3};
+		double v2[3] = {5, 6, 7};
+		double result[3];
 		rcVmad(result, v1, v2, 0);
 		REQUIRE(result[0] == Approx(1));
 		REQUIRE(result[1] == Approx(2));
@@ -169,9 +169,9 @@ TEST_CASE("rcVadd")
 {
 	SECTION("add two vectors")
 	{
-		float v1[3] = {1, 2, 3};
-		float v2[3] = {5, 6, 7};
-		float result[3];
+		double v1[3] = {1, 2, 3};
+		double v2[3] = {5, 6, 7};
+		double result[3];
 		rcVadd(result, v1, v2);
 		REQUIRE(result[0] == Approx(6));
 		REQUIRE(result[1] == Approx(8));
@@ -183,9 +183,9 @@ TEST_CASE("rcVsub")
 {
 	SECTION("subtract two vectors")
 	{
-		float v1[3] = {5, 4, 3};
-		float v2[3] = {1, 2, 3};
-		float result[3];
+		double v1[3] = {5, 4, 3};
+		double v2[3] = {1, 2, 3};
+		double result[3];
 		rcVsub(result, v1, v2);
 		REQUIRE(result[0] == Approx(4));
 		REQUIRE(result[1] == Approx(2));
@@ -197,8 +197,8 @@ TEST_CASE("rcVmin")
 {
 	SECTION("selects the min component from the vectors")
 	{
-		float v1[3] = {5, 4, 0};
-		float v2[3] = {1, 2, 9};
+		double v1[3] = {5, 4, 0};
+		double v2[3] = {1, 2, 9};
 		rcVmin(v1, v2);
 		REQUIRE(v1[0] == Approx(1));
 		REQUIRE(v1[1] == Approx(2));
@@ -207,8 +207,8 @@ TEST_CASE("rcVmin")
 
 	SECTION("v1 is min")
 	{
-		float v1[3] = {1, 2, 3};
-		float v2[3] = {4, 5, 6};
+		double v1[3] = {1, 2, 3};
+		double v2[3] = {4, 5, 6};
 		rcVmin(v1, v2);
 		REQUIRE(v1[0] == Approx(1));
 		REQUIRE(v1[1] == Approx(2));
@@ -217,8 +217,8 @@ TEST_CASE("rcVmin")
 
 	SECTION("v2 is min")
 	{
-		float v1[3] = {4, 5, 6};
-		float v2[3] = {1, 2, 3};
+		double v1[3] = {4, 5, 6};
+		double v2[3] = {1, 2, 3};
 		rcVmin(v1, v2);
 		REQUIRE(v1[0] == Approx(1));
 		REQUIRE(v1[1] == Approx(2));
@@ -230,8 +230,8 @@ TEST_CASE("rcVmax")
 {
 	SECTION("selects the max component from the vectors")
 	{
-		float v1[3] = {5, 4, 0};
-		float v2[3] = {1, 2, 9};
+		double v1[3] = {5, 4, 0};
+		double v2[3] = {1, 2, 9};
 		rcVmax(v1, v2);
 		REQUIRE(v1[0] == Approx(5));
 		REQUIRE(v1[1] == Approx(4));
@@ -240,8 +240,8 @@ TEST_CASE("rcVmax")
 
 	SECTION("v2 is max")
 	{
-		float v1[3] = {1, 2, 3};
-		float v2[3] = {4, 5, 6};
+		double v1[3] = {1, 2, 3};
+		double v2[3] = {4, 5, 6};
 		rcVmax(v1, v2);
 		REQUIRE(v1[0] == Approx(4));
 		REQUIRE(v1[1] == Approx(5));
@@ -250,8 +250,8 @@ TEST_CASE("rcVmax")
 
 	SECTION("v1 is max")
 	{
-		float v1[3] = {4, 5, 6};
-		float v2[3] = {1, 2, 3};
+		double v1[3] = {4, 5, 6};
+		double v2[3] = {1, 2, 3};
 		rcVmax(v1, v2);
 		REQUIRE(v1[0] == Approx(4));
 		REQUIRE(v1[1] == Approx(5));
@@ -263,8 +263,8 @@ TEST_CASE("rcVcopy")
 {
 	SECTION("copies a vector into another vector")
 	{
-		float v1[3] = {5, 4, 0};
-		float result[3] = {1, 2, 9};
+		double v1[3] = {5, 4, 0};
+		double result[3] = {1, 2, 9};
 		rcVcopy(result, v1);
 		REQUIRE(result[0] == Approx(5));
 		REQUIRE(result[1] == Approx(4));
@@ -279,19 +279,19 @@ TEST_CASE("rcVdist")
 {
 	SECTION("distance between two vectors")
 	{
-		float v1[3] = {3, 1, 3};
-		float v2[3] = {1, 3, 1};
-		float result = rcVdist(v1, v2);
+		double v1[3] = {3, 1, 3};
+		double v2[3] = {1, 3, 1};
+		double result = rcVdist(v1, v2);
 
-		REQUIRE(result == Approx(3.4641f));
+		REQUIRE(result == Approx(3.4641));
 	}
 
 	SECTION("Distance from zero is magnitude")
 	{
-		float v1[3] = {3, 1, 3};
-		float v2[3] = {0, 0, 0};
-		float distance = rcVdist(v1, v2);
-		float magnitude = rcSqrt(rcSqr(v1[0]) + rcSqr(v1[1]) + rcSqr(v1[2]));
+		double v1[3] = {3, 1, 3};
+		double v2[3] = {0, 0, 0};
+		double distance = rcVdist(v1, v2);
+		double magnitude = rcSqrt(rcSqr(v1[0]) + rcSqr(v1[1]) + rcSqr(v1[2]));
 		REQUIRE(distance == Approx(magnitude));
 	}
 }
@@ -300,19 +300,19 @@ TEST_CASE("rcVdistSqr")
 {
 	SECTION("squared distance between two vectors")
 	{
-		float v1[3] = {3, 1, 3};
-		float v2[3] = {1, 3, 1};
-		float result = rcVdistSqr(v1, v2);
+		double v1[3] = {3, 1, 3};
+		double v2[3] = {1, 3, 1};
+		double result = rcVdistSqr(v1, v2);
 
 		REQUIRE(result == Approx(12));
 	}
 
 	SECTION("squared distance from zero is squared magnitude")
 	{
-		float v1[3] = {3, 1, 3};
-		float v2[3] = {0, 0, 0};
-		float distance = rcVdistSqr(v1, v2);
-		float magnitude = rcSqr(v1[0]) + rcSqr(v1[1]) + rcSqr(v1[2]);
+		double v1[3] = {3, 1, 3};
+		double v2[3] = {0, 0, 0};
+		double distance = rcVdistSqr(v1, v2);
+		double magnitude = rcSqr(v1[0]) + rcSqr(v1[1]) + rcSqr(v1[2]);
 		REQUIRE(distance == Approx(magnitude));
 	}
 }
@@ -321,12 +321,12 @@ TEST_CASE("rcVnormalize")
 {
 	SECTION("normalizing reduces magnitude to 1")
 	{
-		float v[3] = {3, 3, 3};
+		double v[3] = {3, 3, 3};
 		rcVnormalize(v);
-		REQUIRE(v[0] == Approx(rcSqrt(1.0f / 3.0f)));
-		REQUIRE(v[1] == Approx(rcSqrt(1.0f / 3.0f)));
-		REQUIRE(v[2] == Approx(rcSqrt(1.0f / 3.0f)));
-		float magnitude = rcSqrt(rcSqr(v[0]) + rcSqr(v[1]) + rcSqr(v[2]));
+		REQUIRE(v[0] == Approx(rcSqrt(1.0 / 3.0)));
+		REQUIRE(v[1] == Approx(rcSqrt(1.0 / 3.0)));
+		REQUIRE(v[2] == Approx(rcSqrt(1.0 / 3.0)));
+		double magnitude = rcSqrt(rcSqr(v[0]) + rcSqr(v[1]) + rcSqr(v[2]));
 		REQUIRE(magnitude == Approx(1));
 	}
 }
@@ -335,9 +335,9 @@ TEST_CASE("rcCalcBounds")
 {
 	SECTION("bounds of one vector")
 	{
-		float verts[] = {1, 2, 3};
-		float bmin[3];
-		float bmax[3];
+		double verts[] = {1, 2, 3};
+		double bmin[3];
+		double bmax[3];
 		rcCalcBounds(verts, 1, bmin, bmax);
 
 		REQUIRE(bmin[0] == Approx(verts[0]));
@@ -351,12 +351,12 @@ TEST_CASE("rcCalcBounds")
 
 	SECTION("bounds of more than one vector")
 	{
-		float verts[] = {
+		double verts[] = {
 			1, 2, 3,
 			0, 2, 5
 		};
-		float bmin[3];
-		float bmax[3];
+		double bmin[3];
+		double bmax[3];
 		rcCalcBounds(verts, 2, bmin, bmax);
 
 		REQUIRE(bmin[0] == Approx(0));
@@ -373,15 +373,15 @@ TEST_CASE("rcCalcGridSize")
 {
 	SECTION("computes the size of an x & z axis grid")
 	{
-		float verts[] = {
+		double verts[] = {
 			1, 2, 3,
 			0, 2, 6
 		};
-		float bmin[3];
-		float bmax[3];
+		double bmin[3];
+		double bmax[3];
 		rcCalcBounds(verts, 2, bmin, bmax);
 
-		float cellSize = 1.5f;
+		double cellSize = 1.5;
 
 		int width;
 		int height;
@@ -397,16 +397,16 @@ TEST_CASE("rcCreateHeightfield")
 {
 	SECTION("create a heightfield")
 	{
-		float verts[] = {
+		double verts[] = {
 			1, 2, 3,
 			0, 2, 6
 		};
-		float bmin[3];
-		float bmax[3];
+		double bmin[3];
+		double bmax[3];
 		rcCalcBounds(verts, 2, bmin, bmax);
 
-		float cellSize = 1.5f;
-		float cellHeight = 2;
+		double cellSize = 1.5;
+		double cellHeight = 2;
 
 		int width;
 		int height;
@@ -442,8 +442,8 @@ TEST_CASE("rcCreateHeightfield")
 TEST_CASE("rcMarkWalkableTriangles")
 {
 	rcContext* ctx = 0;
-	float walkableSlopeAngle = 45;
-	float verts[] = {
+	double walkableSlopeAngle = 45;
+	double verts[] = {
 		0, 0, 0,
 		1, 0, 0,
 		0, 0, -1
@@ -484,8 +484,8 @@ TEST_CASE("rcMarkWalkableTriangles")
 TEST_CASE("rcClearUnwalkableTriangles")
 {
 	rcContext* ctx = 0;
-	float walkableSlopeAngle = 45;
-	float verts[] = {
+	double walkableSlopeAngle = 45;
+	double verts[] = {
 		0, 0, 0,
 		1, 0, 0,
 		0, 0, -1
@@ -520,16 +520,16 @@ TEST_CASE("rcAddSpan")
 {
 	rcContext ctx(false);
 
-	float verts[] = {
+	double verts[] = {
 		1, 2, 3,
 		0, 2, 6
 	};
-	float bmin[3];
-	float bmax[3];
+	double bmin[3];
+	double bmax[3];
 	rcCalcBounds(verts, 2, bmin, bmax);
 
-	float cellSize = 1.5f;
-	float cellHeight = 2;
+	double cellSize = 1.5;
+	double cellHeight = 2;
 
 	int width;
 	int height;
@@ -608,17 +608,17 @@ TEST_CASE("rcAddSpan")
 TEST_CASE("rcRasterizeTriangle")
 {
 	rcContext ctx;
-	float verts[] = {
+	double verts[] = {
 		0, 0, 0,
 		1, 0, 0,
 		0, 0, -1
 	};
-	float bmin[3];
-	float bmax[3];
+	double bmin[3];
+	double bmax[3];
 	rcCalcBounds(verts, 3, bmin, bmax);
 
-	float cellSize = .5f;
-	float cellHeight = .5f;
+	double cellSize = .5;
+	double cellHeight = .5;
 
 	int width;
 	int height;
@@ -660,7 +660,7 @@ TEST_CASE("rcRasterizeTriangle")
 TEST_CASE("rcRasterizeTriangles")
 {
 	rcContext ctx;
-	float verts[] = {
+	double verts[] = {
 		0, 0, 0,
 		1, 0, 0,
 		0, 0, -1,
@@ -674,12 +674,12 @@ TEST_CASE("rcRasterizeTriangles")
 		1,
 		2
 	};
-	float bmin[3];
-	float bmax[3];
+	double bmin[3];
+	double bmax[3];
 	rcCalcBounds(verts, 4, bmin, bmax);
 
-	float cellSize = .5f;
-	float cellHeight = .5f;
+	double cellSize = .5;
+	double cellHeight = .5;
 
 	int width;
 	int height;
@@ -785,7 +785,7 @@ TEST_CASE("rcRasterizeTriangles")
 
 	SECTION("Triangle list overload")
 	{
-		float vertsList[] = {
+		double vertsList[] = {
 			0, 0, 0,
 			1, 0, 0,
 			0, 0, -1,
@@ -1106,7 +1106,7 @@ int64_t NowNanos() {
 				Body(); \
 			} \
 			int64_t nanos = NowNanos() - begin_time; \
-			printf("BM_%-35s %ld iterations in %10ld nanos: %10.2f nanos/it\n", #name ":", (int64_t)iterations, nanos, double(nanos) / iterations); \
+			printf("BM_%-35s %ld iterations in %10ld nanos: %10.2lf nanos/it\n", #name ":", (int64_t)iterations, nanos, double(nanos) / iterations); \
 		} \
 		static void Body(); \
 	}; \

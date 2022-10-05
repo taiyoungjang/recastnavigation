@@ -45,7 +45,7 @@ struct dtNavMeshCreateParams
 	/// @{
 
 	const unsigned int* detailMeshes;		///< The height detail sub-mesh data. [Size: 4 * #polyCount]
-	const float* detailVerts;				///< The detail mesh vertices. [Size: 3 * #detailVertsCount] [Unit: wu]
+	const double* detailVerts;				///< The detail mesh vertices. [Size: 3 * #detailVertsCount] [Unit: wu]
 	int detailVertsCount;					///< The number of vertices in the detail mesh.
 	const unsigned char* detailTris;		///< The detail mesh triangles. [Size: 4 * #detailTriCount]
 	int detailTriCount;						///< The number of triangles in the detail mesh.
@@ -58,9 +58,9 @@ struct dtNavMeshCreateParams
 	/// @{
 
 	/// Off-mesh connection vertices. [(ax, ay, az, bx, by, bz) * #offMeshConCount] [Unit: wu]
-	const float* offMeshConVerts;
+	const double* offMeshConVerts;
 	/// Off-mesh connection radii. [Size: #offMeshConCount] [Unit: wu]
-	const float* offMeshConRad;
+	const double* offMeshConRad;
 	/// User defined flags assigned to the off-mesh connections. [Size: #offMeshConCount]
 	const unsigned short* offMeshConFlags;
 	/// User defined area ids assigned to the off-mesh connections. [Size: #offMeshConCount]
@@ -84,18 +84,18 @@ struct dtNavMeshCreateParams
 	int tileX;				///< The tile's x-grid location within the multi-tile destination mesh. (Along the x-axis.)
 	int tileY;				///< The tile's y-grid location within the multi-tile desitation mesh. (Along the z-axis.)
 	int tileLayer;			///< The tile's layer within the layered destination mesh. [Limit: >= 0] (Along the y-axis.)
-	float bmin[3];			///< The minimum bounds of the tile. [(x, y, z)] [Unit: wu]
-	float bmax[3];			///< The maximum bounds of the tile. [(x, y, z)] [Unit: wu]
+	double bmin[3];			///< The minimum bounds of the tile. [(x, y, z)] [Unit: wu]
+	double bmax[3];			///< The maximum bounds of the tile. [(x, y, z)] [Unit: wu]
 
 	/// @}
 	/// @name General Configuration Attributes
 	/// @{
 
-	float walkableHeight;	///< The agent height. [Unit: wu]
-	float walkableRadius;	///< The agent radius. [Unit: wu]
-	float walkableClimb;	///< The agent maximum traversable ledge. (Up/Down) [Unit: wu]
-	float cs;				///< The xz-plane cell size of the polygon mesh. [Limit: > 0] [Unit: wu]
-	float ch;				///< The y-axis cell height of the polygon mesh. [Limit: > 0] [Unit: wu]
+	double walkableHeight;	///< The agent height. [Unit: wu]
+	double walkableRadius;	///< The agent radius. [Unit: wu]
+	double walkableClimb;	///< The agent maximum traversable ledge. (Up/Down) [Unit: wu]
+	double cs;				///< The xz-plane cell size of the polygon mesh. [Limit: > 0] [Unit: wu]
+	double ch;				///< The y-axis cell height of the polygon mesh. [Limit: > 0] [Unit: wu]
 
 	/// True if a bounding volume tree should be built for the tile.
 	/// @note The BVTree is not normally needed for layered navigation meshes.

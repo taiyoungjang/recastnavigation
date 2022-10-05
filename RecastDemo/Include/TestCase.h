@@ -60,16 +60,16 @@ class TestCase
 		}
 		
 		TestType type;
-		float spos[3];
-		float epos[3];
-		float nspos[3];
-		float nepos[3];
-		float radius;
+		double spos[3];
+		double epos[3];
+		double nspos[3];
+		double nepos[3];
+		double radius;
 		unsigned short includeFlags;
 		unsigned short excludeFlags;
 		bool expand;
 		
-		float* straight;
+		double* straight;
 		int nstraight;
 		dtPolyRef* polys;
 		int npolys;

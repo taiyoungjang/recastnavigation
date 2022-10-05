@@ -66,7 +66,7 @@ static void addGfxCmdScissor(int x, int y, int w, int h)
 	cmd.rect.h = (short)h;
 }
 
-static void addGfxCmdRect(float x, float y, float w, float h, unsigned int color)
+static void addGfxCmdRect(double x, double y, double w, double h, unsigned int color)
 {
 	if (g_gfxCmdQueueSize >= GFXCMD_QUEUE_SIZE)
 		return;
@@ -74,14 +74,14 @@ static void addGfxCmdRect(float x, float y, float w, float h, unsigned int color
 	cmd.type = IMGUI_GFXCMD_RECT;
 	cmd.flags = 0;
 	cmd.col = color;
-	cmd.rect.x = (short)(x*8.0f);
-	cmd.rect.y = (short)(y*8.0f);
-	cmd.rect.w = (short)(w*8.0f);
-	cmd.rect.h = (short)(h*8.0f);
+	cmd.rect.x = (short)(x*8.0);
+	cmd.rect.y = (short)(y*8.0);
+	cmd.rect.w = (short)(w*8.0);
+	cmd.rect.h = (short)(h*8.0);
 	cmd.rect.r = 0;
 }
 
-static void addGfxCmdLine(float x0, float y0, float x1, float y1, float r, unsigned int color)
+static void addGfxCmdLine(double x0, double y0, double x1, double y1, double r, unsigned int color)
 {
 	if (g_gfxCmdQueueSize >= GFXCMD_QUEUE_SIZE)
 		return;
@@ -89,14 +89,14 @@ static void addGfxCmdLine(float x0, float y0, float x1, float y1, float r, unsig
 	cmd.type = IMGUI_GFXCMD_LINE;
 	cmd.flags = 0;
 	cmd.col = color;
-	cmd.line.x0 = (short)(x0*8.0f);
-	cmd.line.y0 = (short)(y0*8.0f);
-	cmd.line.x1 = (short)(x1*8.0f);
-	cmd.line.y1 = (short)(y1*8.0f);
-	cmd.line.r = (short)(r*8.0f);
+	cmd.line.x0 = (short)(x0*8.0);
+	cmd.line.y0 = (short)(y0*8.0);
+	cmd.line.x1 = (short)(x1*8.0);
+	cmd.line.y1 = (short)(y1*8.0);
+	cmd.line.r = (short)(r*8.0);
 }
 
-static void addGfxCmdRoundedRect(float x, float y, float w, float h, float r, unsigned int color)
+static void addGfxCmdRoundedRect(double x, double y, double w, double h, double r, unsigned int color)
 {
 	if (g_gfxCmdQueueSize >= GFXCMD_QUEUE_SIZE)
 		return;
@@ -104,11 +104,11 @@ static void addGfxCmdRoundedRect(float x, float y, float w, float h, float r, un
 	cmd.type = IMGUI_GFXCMD_RECT;
 	cmd.flags = 0;
 	cmd.col = color;
-	cmd.rect.x = (short)(x*8.0f);
-	cmd.rect.y = (short)(y*8.0f);
-	cmd.rect.w = (short)(w*8.0f);
-	cmd.rect.h = (short)(h*8.0f);
-	cmd.rect.r = (short)(r*8.0f);
+	cmd.rect.x = (short)(x*8.0);
+	cmd.rect.y = (short)(y*8.0);
+	cmd.rect.w = (short)(w*8.0);
+	cmd.rect.h = (short)(h*8.0);
+	cmd.rect.r = (short)(r*8.0);
 }
 
 static void addGfxCmdTriangle(int x, int y, int w, int h, int flags, unsigned int color)
@@ -119,10 +119,10 @@ static void addGfxCmdTriangle(int x, int y, int w, int h, int flags, unsigned in
 	cmd.type = IMGUI_GFXCMD_TRIANGLE;
 	cmd.flags = (char)flags;
 	cmd.col = color;
-	cmd.rect.x = (short)(x*8.0f);
-	cmd.rect.y = (short)(y*8.0f);
-	cmd.rect.w = (short)(w*8.0f);
-	cmd.rect.h = (short)(h*8.0f);
+	cmd.rect.x = (short)(x*8.0);
+	cmd.rect.y = (short)(y*8.0);
+	cmd.rect.w = (short)(w*8.0);
+	cmd.rect.h = (short)(h*8.0);
 }
 
 static void addGfxCmdText(int x, int y, int align, const char* text, unsigned int color)
@@ -162,7 +162,7 @@ struct GuiState
 	bool isActive;
 	bool wentActive;
 	int dragX, dragY;
-	float dragOrig;
+	double dragOrig;
 	int widgetX, widgetY, widgetW;
 	bool insideCurrentScroll;
 	
@@ -343,7 +343,7 @@ bool imguiBeginScrollArea(const char* name, int x, int y, int w, int h, int* scr
 	g_insideScrollArea = inRect(x, y, w, h, false);
 	g_state.insideCurrentScroll = g_insideScrollArea;
 
-	addGfxCmdRoundedRect((float)x, (float)y, (float)w, (float)h, 6, imguiRGBA(0,0,0,192));
+	addGfxCmdRoundedRect((double)x, (double)y, (double)w, (double)h, 6, imguiRGBA(0,0,0,192));
 
 	addGfxCmdText(x+AREA_HEADER/2, y+h-AREA_HEADER/2-TEXT_HEIGHT/2, IMGUI_ALIGN_LEFT, name, imguiRGBA(255,255,255,128));
 
@@ -367,11 +367,11 @@ void imguiEndScrollArea()
 	int sbot = g_state.widgetY;
 	int sh = stop - sbot; // The scrollable area height.
 
-	float barHeight = (float)h/(float)sh;
+	double barHeight = (double)h/(double)sh;
 	
 	if (barHeight < 1)
 	{
-		float barY = (float)(y - sbot)/(float)sh;
+		double barY = (double)(y - sbot)/(double)sh;
 		if (barY < 0) barY = 0;
 		if (barY > 1) barY = 1;
 		
@@ -387,7 +387,7 @@ void imguiEndScrollArea()
 		buttonLogic(hid, over);
 		if (isActive(hid))
 		{
-			float u = (float)(hy-y) / (float)range;
+			double u = (double)(hy-y) / (double)range;
 			if (g_state.wentActive)
 			{
 				g_state.dragY = g_state.my;
@@ -395,7 +395,7 @@ void imguiEndScrollArea()
 			}
 			if (g_state.dragY != g_state.my)
 			{
-				u = g_state.dragOrig + (g_state.my - g_state.dragY) / (float)range;
+				u = g_state.dragOrig + (g_state.my - g_state.dragY) / (double)range;
 				if (u < 0) u = 0;
 				if (u > 1) u = 1;
 				*g_scrollVal = (int)((1-u) * (sh - h));
@@ -403,12 +403,12 @@ void imguiEndScrollArea()
 		}
 		
 		// BG
-		addGfxCmdRoundedRect((float)x, (float)y, (float)w, (float)h, (float)w/2-1, imguiRGBA(0,0,0,196));
+		addGfxCmdRoundedRect((double)x, (double)y, (double)w, (double)h, (double)w/2-1, imguiRGBA(0,0,0,196));
 		// Bar
 		if (isActive(hid))
-			addGfxCmdRoundedRect((float)hx, (float)hy, (float)hw, (float)hh, (float)w/2-1, imguiRGBA(255,196,0,196));
+			addGfxCmdRoundedRect((double)hx, (double)hy, (double)hw, (double)hh, (double)w/2-1, imguiRGBA(255,196,0,196));
 		else
-			addGfxCmdRoundedRect((float)hx, (float)hy, (float)hw, (float)hh, (float)w/2-1, isHot(hid) ? imguiRGBA(255,196,0,96) : imguiRGBA(255,255,255,64));
+			addGfxCmdRoundedRect((double)hx, (double)hy, (double)hw, (double)hh, (double)w/2-1, isHot(hid) ? imguiRGBA(255,196,0,96) : imguiRGBA(255,255,255,64));
 
 		// Handle mouse scrolling.
 		if (g_insideScrollArea) // && !anyActive())
@@ -438,7 +438,7 @@ bool imguiButton(const char* text, bool enabled)
 	bool over = enabled && inRect(x, y, w, h);
 	bool res = buttonLogic(id, over);
 
-	addGfxCmdRoundedRect((float)x, (float)y, (float)w, (float)h, (float)BUTTON_HEIGHT/2-1, imguiRGBA(128,128,128, isActive(id)?196:96));
+	addGfxCmdRoundedRect((double)x, (double)y, (double)w, (double)h, (double)BUTTON_HEIGHT/2-1, imguiRGBA(128,128,128, isActive(id)?196:96));
 	if (enabled)
 		addGfxCmdText(x+BUTTON_HEIGHT/2, y+BUTTON_HEIGHT/2-TEXT_HEIGHT/2, IMGUI_ALIGN_LEFT, text, isHot(id) ? imguiRGBA(255,196,0,255) : imguiRGBA(255,255,255,200));
 	else
@@ -462,7 +462,7 @@ bool imguiItem(const char* text, bool enabled)
 	bool res = buttonLogic(id, over);
 	
 	if (isHot(id))
-		addGfxCmdRoundedRect((float)x, (float)y, (float)w, (float)h, 2.0f, imguiRGBA(255,196,0,isActive(id)?196:96));
+		addGfxCmdRoundedRect((double)x, (double)y, (double)w, (double)h, 2.0, imguiRGBA(255,196,0,isActive(id)?196:96));
 
 	if (enabled)
 		addGfxCmdText(x+BUTTON_HEIGHT/2, y+BUTTON_HEIGHT/2-TEXT_HEIGHT/2, IMGUI_ALIGN_LEFT, text, imguiRGBA(255,255,255,200));
@@ -488,13 +488,13 @@ bool imguiCheck(const char* text, bool checked, bool enabled)
 	
 	const int cx = x+BUTTON_HEIGHT/2-CHECK_SIZE/2;
 	const int cy = y+BUTTON_HEIGHT/2-CHECK_SIZE/2;
-	addGfxCmdRoundedRect((float)cx-3, (float)cy-3, (float)CHECK_SIZE+6, (float)CHECK_SIZE+6, 4, imguiRGBA(128,128,128, isActive(id)?196:96));
+	addGfxCmdRoundedRect((double)cx-3, (double)cy-3, (double)CHECK_SIZE+6, (double)CHECK_SIZE+6, 4, imguiRGBA(128,128,128, isActive(id)?196:96));
 	if (checked)
 	{
 		if (enabled)
-			addGfxCmdRoundedRect((float)cx, (float)cy, (float)CHECK_SIZE, (float)CHECK_SIZE, (float)CHECK_SIZE/2-1, imguiRGBA(255,255,255,isActive(id)?255:200));
+			addGfxCmdRoundedRect((double)cx, (double)cy, (double)CHECK_SIZE, (double)CHECK_SIZE, (double)CHECK_SIZE/2-1, imguiRGBA(255,255,255,isActive(id)?255:200));
 		else
-			addGfxCmdRoundedRect((float)cx, (float)cy, (float)CHECK_SIZE, (float)CHECK_SIZE, (float)CHECK_SIZE/2-1, imguiRGBA(128,128,128,200));
+			addGfxCmdRoundedRect((double)cx, (double)cy, (double)CHECK_SIZE, (double)CHECK_SIZE, (double)CHECK_SIZE/2-1, imguiRGBA(128,128,128,200));
 	}
 
 	if (enabled)
@@ -556,7 +556,7 @@ void imguiValue(const char* text)
 	addGfxCmdText(x+w-BUTTON_HEIGHT/2, y+BUTTON_HEIGHT/2-TEXT_HEIGHT/2, IMGUI_ALIGN_RIGHT, text, imguiRGBA(255,255,255,200));
 }
 
-bool imguiSlider(const char* text, float* val, float vmin, float vmax, float vinc, bool enabled)
+bool imguiSlider(const char* text, double* val, double vmin, double vmax, double vinc, bool enabled)
 {
 	g_state.widgetId++;
 	unsigned int id = (g_state.areaId<<16) | g_state.widgetId;
@@ -567,11 +567,11 @@ bool imguiSlider(const char* text, float* val, float vmin, float vmax, float vin
 	int h = SLIDER_HEIGHT;
 	g_state.widgetY -= SLIDER_HEIGHT + DEFAULT_SPACING;
 
-	addGfxCmdRoundedRect((float)x, (float)y, (float)w, (float)h, 4.0f, imguiRGBA(0,0,0,128));
+	addGfxCmdRoundedRect((double)x, (double)y, (double)w, (double)h, 4.0, imguiRGBA(0,0,0,128));
 
 	const int range = w - SLIDER_MARKER_WIDTH;
 
-	float u = (*val - vmin) / (vmax-vmin);
+	double u = (*val - vmin) / (vmax-vmin);
 	if (u < 0) u = 0;
 	if (u > 1) u = 1;
 	int m = (int)(u * range);
@@ -589,23 +589,23 @@ bool imguiSlider(const char* text, float* val, float vmin, float vmax, float vin
 		}
 		if (g_state.dragX != g_state.mx)
 		{
-			u = g_state.dragOrig + (float)(g_state.mx - g_state.dragX) / (float)range;
+			u = g_state.dragOrig + (double)(g_state.mx - g_state.dragX) / (double)range;
 			if (u < 0) u = 0;
 			if (u > 1) u = 1;
 			*val = vmin + u*(vmax-vmin);
-			*val = floorf(*val/vinc+0.5f)*vinc; // Snap to vinc
+			*val = floor(*val/vinc+0.5)*vinc; // Snap to vinc
 			m = (int)(u * range);
 			valChanged = true;
 		}
 	}
 
 	if (isActive(id))
-		addGfxCmdRoundedRect((float)(x+m), (float)y, (float)SLIDER_MARKER_WIDTH, (float)SLIDER_HEIGHT, 4.0f, imguiRGBA(255,255,255,255));
+		addGfxCmdRoundedRect((double)(x+m), (double)y, (double)SLIDER_MARKER_WIDTH, (double)SLIDER_HEIGHT, 4.0, imguiRGBA(255,255,255,255));
 	else
-		addGfxCmdRoundedRect((float)(x+m), (float)y, (float)SLIDER_MARKER_WIDTH, (float)SLIDER_HEIGHT, 4.0f, isHot(id) ? imguiRGBA(255,196,0,128) : imguiRGBA(255,255,255,64));
+		addGfxCmdRoundedRect((double)(x+m), (double)y, (double)SLIDER_MARKER_WIDTH, (double)SLIDER_HEIGHT, 4.0, isHot(id) ? imguiRGBA(255,196,0,128) : imguiRGBA(255,255,255,64));
 
 	// TODO: fix this, take a look at 'nicenum'.
-	int digits = (int)(ceilf(log10f(vinc)));
+	int digits = (int)(ceil(log10f(vinc)));
 	char fmt[16];
 	snprintf(fmt, 16, "%%.%df", digits >= 0 ? 0 : -digits);
 	char msg[128];
@@ -651,7 +651,7 @@ void imguiSeparatorLine()
 	int h = 1;
 	g_state.widgetY -= DEFAULT_SPACING*4;
 
-	addGfxCmdRect((float)x, (float)y, (float)w, (float)h, imguiRGBA(255,255,255,32));
+	addGfxCmdRect((double)x, (double)y, (double)w, (double)h, imguiRGBA(255,255,255,32));
 }
 
 void imguiDrawText(int x, int y, int align, const char* text, unsigned int color)
@@ -659,17 +659,17 @@ void imguiDrawText(int x, int y, int align, const char* text, unsigned int color
 	addGfxCmdText(x, y, align, text, color);
 }
 
-void imguiDrawLine(float x0, float y0, float x1, float y1, float r, unsigned int color)
+void imguiDrawLine(double x0, double y0, double x1, double y1, double r, unsigned int color)
 {
 	addGfxCmdLine(x0, y0, x1, y1, r, color);
 }
 
-void imguiDrawRect(float x, float y, float w, float h, unsigned int color)
+void imguiDrawRect(double x, double y, double w, double h, unsigned int color)
 {
 	addGfxCmdRect(x, y, w, h, color);
 }
 
-void imguiDrawRoundedRect(float x, float y, float w, float h, float r, unsigned int color)
+void imguiDrawRoundedRect(double x, double y, double w, double h, double r, unsigned int color)
 {
 	addGfxCmdRoundedRect(x, y, w, h, r, color);
 }

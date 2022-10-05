@@ -27,12 +27,12 @@ class ConvexVolumeTool : public SampleTool
 {
 	Sample* m_sample;
 	int m_areaType;
-	float m_polyOffset;
-	float m_boxHeight;
-	float m_boxDescent;
+	double m_polyOffset;
+	double m_boxHeight;
+	double m_boxDescent;
 	
 	static const int MAX_PTS = 12;
-	float m_pts[MAX_PTS*3];
+	double m_pts[MAX_PTS*3];
 	int m_npts;
 	int m_hull[MAX_PTS];
 	int m_nhull;
@@ -44,10 +44,10 @@ public:
 	virtual void init(Sample* sample);
 	virtual void reset();
 	virtual void handleMenu();
-	virtual void handleClick(const float* s, const float* p, bool shift);
+	virtual void handleClick(const double* s, const double* p, bool shift);
 	virtual void handleToggle();
 	virtual void handleStep();
-	virtual void handleUpdate(const float dt);
+	virtual void handleUpdate(const double dt);
 	virtual void handleRender();
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 };

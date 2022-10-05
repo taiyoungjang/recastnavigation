@@ -24,7 +24,7 @@
 #include "SDL_opengl.h"
 
 // Some math headers don't have PI defined.
-static const float PI = 3.14159265f;
+static const double PI = 3.141592653589793238462643383279502884;
 
 void imguifree(void* ptr, void* userptr);
 void* imguimalloc(size_t size, void* userptr);
@@ -45,11 +45,11 @@ void* imguimalloc(size_t size, void* /*userptr*/)
 }
 
 static const unsigned TEMP_COORD_COUNT = 100;
-static float g_tempCoords[TEMP_COORD_COUNT*2];
-static float g_tempNormals[TEMP_COORD_COUNT*2];
+static double g_tempCoords[TEMP_COORD_COUNT*2];
+static double g_tempNormals[TEMP_COORD_COUNT*2];
 
 static const int CIRCLE_VERTS = 8*4;
-static float g_circleVerts[CIRCLE_VERTS*2];
+static double g_circleVerts[CIRCLE_VERTS*2];
 
 static stbtt_bakedchar g_cdata[96]; // ASCII 32..126 is 95 glyphs
 static GLuint g_ftex = 0;
@@ -59,20 +59,20 @@ inline unsigned int RGBA(unsigned char r, unsigned char g, unsigned char b, unsi
 	return (r) | (g << 8) | (b << 16) | (a << 24);
 }
 
-static void drawPolygon(const float* coords, unsigned numCoords, float r, unsigned int col)
+static void drawPolygon(const double* coords, unsigned numCoords, double r, unsigned int col)
 {
 	if (numCoords > TEMP_COORD_COUNT) numCoords = TEMP_COORD_COUNT;
 	
 	for (unsigned i = 0, j = numCoords-1; i < numCoords; j=i++)
 	{
-		const float* v0 = &coords[j*2];
-		const float* v1 = &coords[i*2];
-		float dx = v1[0] - v0[0];
-		float dy = v1[1] - v0[1];
-		float d = sqrtf(dx*dx+dy*dy);
+		const double* v0 = &coords[j*2];
+		const double* v1 = &coords[i*2];
+		double dx = v1[0] - v0[0];
+		double dy = v1[1] - v0[1];
+		double d = sqrt(dx*dx+dy*dy);
 		if (d > 0)
 		{
-			d = 1.0f/d;
+			d = 1.0/d;
 			dx *= d;
 			dy *= d;
 		}
@@ -82,17 +82,17 @@ static void drawPolygon(const float* coords, unsigned numCoords, float r, unsign
 	
 	for (unsigned i = 0, j = numCoords-1; i < numCoords; j=i++)
 	{
-		float dlx0 = g_tempNormals[j*2+0];
-		float dly0 = g_tempNormals[j*2+1];
-		float dlx1 = g_tempNormals[i*2+0];
-		float dly1 = g_tempNormals[i*2+1];
-		float dmx = (dlx0 + dlx1) * 0.5f;
-		float dmy = (dly0 + dly1) * 0.5f;
-		float	dmr2 = dmx*dmx + dmy*dmy;
-		if (dmr2 > 0.000001f)
+		double dlx0 = g_tempNormals[j*2+0];
+		double dly0 = g_tempNormals[j*2+1];
+		double dlx1 = g_tempNormals[i*2+0];
+		double dly1 = g_tempNormals[i*2+1];
+		double dmx = (dlx0 + dlx1) * 0.5;
+		double dmy = (dly0 + dly1) * 0.5;
+		double	dmr2 = dmx*dmx + dmy*dmy;
+		if (dmr2 > 0.000001)
 		{
-			float	scale = 1.0f / dmr2;
-			if (scale > 10.0f) scale = 10.0f;
+			double	scale = 1.0 / dmr2;
+			if (scale > 10.0) scale = 10.0;
 			dmx *= scale;
 			dmy *= scale;
 		}
@@ -108,47 +108,47 @@ static void drawPolygon(const float* coords, unsigned numCoords, float r, unsign
 	
 	for (unsigned i = 0, j = numCoords-1; i < numCoords; j=i++)
 	{
-		glVertex2fv(&coords[i*2]);
-		glVertex2fv(&coords[j*2]);
+		glVertex2dv(&coords[i*2]);
+		glVertex2dv(&coords[j*2]);
 		glColor4ubv((GLubyte*)&colTrans);
-		glVertex2fv(&g_tempCoords[j*2]);
+		glVertex2dv(&g_tempCoords[j*2]);
 		
-		glVertex2fv(&g_tempCoords[j*2]);
-		glVertex2fv(&g_tempCoords[i*2]);
+		glVertex2dv(&g_tempCoords[j*2]);
+		glVertex2dv(&g_tempCoords[i*2]);
 		
 		glColor4ubv((GLubyte*)&col);
-		glVertex2fv(&coords[i*2]);
+		glVertex2dv(&coords[i*2]);
 	}
 	
 	glColor4ubv((GLubyte*)&col);
 	for (unsigned i = 2; i < numCoords; ++i)
 	{
-		glVertex2fv(&coords[0]);
-		glVertex2fv(&coords[(i-1)*2]);
-		glVertex2fv(&coords[i*2]);
+		glVertex2dv(&coords[0]);
+		glVertex2dv(&coords[(i-1)*2]);
+		glVertex2dv(&coords[i*2]);
 	}
 	
 	glEnd();
 }
 
-static void drawRect(float x, float y, float w, float h, float fth, unsigned int col)
+static void drawRect(double x, double y, double w, double h, double fth, unsigned int col)
 {
-	float verts[4*2] =
+	double verts[4*2] =
 	{
-		x+0.5f, y+0.5f,
-		x+w-0.5f, y+0.5f,
-		x+w-0.5f, y+h-0.5f,
-		x+0.5f, y+h-0.5f,
+		x+0.5, y+0.5,
+		x+w-0.5, y+0.5,
+		x+w-0.5, y+h-0.5,
+		x+0.5, y+h-0.5,
 	};
 	drawPolygon(verts, 4, fth, col);
 }
 
 /*
-static void drawEllipse(float x, float y, float w, float h, float fth, unsigned int col)
+static void drawEllipse(double x, double y, double w, double h, double fth, unsigned int col)
 {
-	float verts[CIRCLE_VERTS*2];
-	const float* cverts = g_circleVerts;
-	float* v = verts;
+	double verts[CIRCLE_VERTS*2];
+	const double* cverts = g_circleVerts;
+	double* v = verts;
 	
 	for (int i = 0; i < CIRCLE_VERTS; ++i)
 	{
@@ -160,12 +160,12 @@ static void drawEllipse(float x, float y, float w, float h, float fth, unsigned 
 }
 */
 
-static void drawRoundedRect(float x, float y, float w, float h, float r, float fth, unsigned int col)
+static void drawRoundedRect(double x, double y, double w, double h, double r, double fth, unsigned int col)
 {
 	const unsigned n = CIRCLE_VERTS/4;
-	float verts[(n+1)*4*2];
-	const float* cverts = g_circleVerts;
-	float* v = verts;
+	double verts[(n+1)*4*2];
+	const double* cverts = g_circleVerts;
+	double* v = verts;
 	
 	for (unsigned i = 0; i <= n; ++i)
 	{
@@ -197,23 +197,23 @@ static void drawRoundedRect(float x, float y, float w, float h, float r, float f
 }
 
 
-static void drawLine(float x0, float y0, float x1, float y1, float r, float fth, unsigned int col)
+static void drawLine(double x0, double y0, double x1, double y1, double r, double fth, unsigned int col)
 {
-	float dx = x1-x0;
-	float dy = y1-y0;
-	float d = sqrtf(dx*dx+dy*dy);
-	if (d > 0.0001f)
+	double dx = x1-x0;
+	double dy = y1-y0;
+	double d = sqrt(dx*dx+dy*dy);
+	if (d > 0.0001)
 	{
-		d = 1.0f/d;
+		d = 1.0/d;
 		dx *= d;
 		dy *= d;
 	}
-	float nx = dy;
-	float ny = -dx;
-	float verts[4*2];
+	double nx = dy;
+	double ny = -dx;
+	double verts[4*2];
 	r -= fth;
-	r *= 0.5f;
-	if (r < 0.01f) r = 0.01f;
+	r *= 0.5;
+	if (r < 0.01) r = 0.01;
 	dx *= r;
 	dy *= r;
 	nx *= r;
@@ -239,9 +239,9 @@ bool imguiRenderGLInit(const char* fontpath)
 {
 	for (int i = 0; i < CIRCLE_VERTS; ++i)
 	{
-		float a = (float)i/(float)CIRCLE_VERTS * PI*2;
-		g_circleVerts[i*2+0] = cosf(a);
-		g_circleVerts[i*2+1] = sinf(a);
+		double a = (double)i/(double)CIRCLE_VERTS * PI*2;
+		g_circleVerts[i*2+0] = cos(a);
+		g_circleVerts[i*2+1] = sin(a);
 	}
 
 	// Load font.
@@ -288,7 +288,7 @@ bool imguiRenderGLInit(const char* fontpath)
 		return false;
 	}
 	
-	stbtt_BakeFontBitmap(ttfBuffer,0, 15.0f, bmap,512,512, 32,96, g_cdata);
+	stbtt_BakeFontBitmap(ttfBuffer,0, 15.0, bmap,512,512, 32,96, g_cdata);
 	
 	// can free ttf_buffer at this point
 	glGenTextures(1, &g_ftex);
@@ -313,31 +313,31 @@ void imguiRenderGLDestroy()
 }
 
 static void getBakedQuad(stbtt_bakedchar *chardata, int pw, int ph, int char_index,
-						 float *xpos, float *ypos, stbtt_aligned_quad *q)
+						 double *xpos, double *ypos, stbtt_aligned_quad *q)
 {
 	stbtt_bakedchar *b = chardata + char_index;
 	int round_x = STBTT_ifloor(*xpos + b->xoff);
 	int round_y = STBTT_ifloor(*ypos - b->yoff);
 	
-	q->x0 = (float)round_x;
-	q->y0 = (float)round_y;
-	q->x1 = (float)round_x + b->x1 - b->x0;
-	q->y1 = (float)round_y - b->y1 + b->y0;
+	q->x0 = (double)round_x;
+	q->y0 = (double)round_y;
+	q->x1 = (double)round_x + b->x1 - b->x0;
+	q->y1 = (double)round_y - b->y1 + b->y0;
 	
-	q->s0 = b->x0 / (float)pw;
-	q->t0 = b->y0 / (float)pw;
-	q->s1 = b->x1 / (float)ph;
-	q->t1 = b->y1 / (float)ph;
+	q->s0 = b->x0 / (double)pw;
+	q->t0 = b->y0 / (double)pw;
+	q->s1 = b->x1 / (double)ph;
+	q->t1 = b->y1 / (double)ph;
 	
 	*xpos += b->xadvance;
 }
 
-static const float g_tabStops[4] = {150, 210, 270, 330};
+static const double g_tabStops[4] = {150, 210, 270, 330};
 
-static float getTextLength(stbtt_bakedchar *chardata, const char* text)
+static double getTextLength(stbtt_bakedchar *chardata, const char* text)
 {
-	float xpos = 0;
-	float len = 0;
+	double xpos = 0;
+	double len = 0;
 	while (*text)
 	{
 		int c = (unsigned char)*text;
@@ -356,7 +356,7 @@ static float getTextLength(stbtt_bakedchar *chardata, const char* text)
 		{
 			stbtt_bakedchar *b = chardata + c-32;
 			int round_x = STBTT_ifloor((xpos + b->xoff) + 0.5);
-			len = round_x + b->x1 - b->x0 + 0.5f;
+			len = round_x + b->x1 - b->x0 + 0.5;
 			xpos += b->xadvance;
 		}
 		++text;
@@ -364,7 +364,7 @@ static float getTextLength(stbtt_bakedchar *chardata, const char* text)
 	return len;
 }
 
-static void drawText(float x, float y, const char *text, int align, unsigned int col)
+static void drawText(double x, double y, const char *text, int align, unsigned int col)
 {
 	if (!g_ftex) return;
 	if (!text) return;
@@ -383,7 +383,7 @@ static void drawText(float x, float y, const char *text, int align, unsigned int
 	
 	glBegin(GL_TRIANGLES);
 	
-	const float ox = x;
+	const double ox = x;
 	
 	while (*text)
 	{
@@ -431,7 +431,7 @@ void imguiRenderGLDraw()
 	const imguiGfxCmd* q = imguiGetRenderQueue();
 	int nq = imguiGetRenderQueueSize();
 
-	const float s = 1.0f/8.0f;
+	const double s = 1.0/8.0;
 
 	glDisable(GL_SCISSOR_TEST);
 	for (int i = 0; i < nq; ++i)
@@ -441,42 +441,42 @@ void imguiRenderGLDraw()
 		{
 			if (cmd.rect.r == 0)
 			{
-				drawRect((float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
-						 (float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
-						 1.0f, cmd.col);
+				drawRect((double)cmd.rect.x*s+0.5, (double)cmd.rect.y*s+0.5,
+						 (double)cmd.rect.w*s-1, (double)cmd.rect.h*s-1,
+						 1.0, cmd.col);
 			}
 			else
 			{
-				drawRoundedRect((float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
-								(float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
-								(float)cmd.rect.r*s, 1.0f, cmd.col);
+				drawRoundedRect((double)cmd.rect.x*s+0.5, (double)cmd.rect.y*s+0.5,
+								(double)cmd.rect.w*s-1, (double)cmd.rect.h*s-1,
+								(double)cmd.rect.r*s, 1.0, cmd.col);
 			}
 		}
 		else if (cmd.type == IMGUI_GFXCMD_LINE)
 		{
-			drawLine(cmd.line.x0*s, cmd.line.y0*s, cmd.line.x1*s, cmd.line.y1*s, cmd.line.r*s, 1.0f, cmd.col);
+			drawLine(cmd.line.x0*s, cmd.line.y0*s, cmd.line.x1*s, cmd.line.y1*s, cmd.line.r*s, 1.0, cmd.col);
 		}
 		else if (cmd.type == IMGUI_GFXCMD_TRIANGLE)
 		{
 			if (cmd.flags == 1)
 			{
-				const float verts[3*2] =
+				const double verts[3*2] =
 				{
-					(float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
-					(float)cmd.rect.x*s+0.5f+(float)cmd.rect.w*s-1, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s/2-0.5f,
-					(float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s-1,
+					(double)cmd.rect.x*s+0.5, (double)cmd.rect.y*s+0.5,
+					(double)cmd.rect.x*s+0.5+(double)cmd.rect.w*s-1, (double)cmd.rect.y*s+0.5+(double)cmd.rect.h*s/2-0.5,
+					(double)cmd.rect.x*s+0.5, (double)cmd.rect.y*s+0.5+(double)cmd.rect.h*s-1,
 				};
-				drawPolygon(verts, 3, 1.0f, cmd.col);
+				drawPolygon(verts, 3, 1.0, cmd.col);
 			}
 			if (cmd.flags == 2)
 			{
-				const float verts[3*2] =
+				const double verts[3*2] =
 				{
-					(float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s-1,
-					(float)cmd.rect.x*s+0.5f+(float)cmd.rect.w*s/2-0.5f, (float)cmd.rect.y*s+0.5f,
-					(float)cmd.rect.x*s+0.5f+(float)cmd.rect.w*s-1, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s-1,
+					(double)cmd.rect.x*s+0.5, (double)cmd.rect.y*s+0.5+(double)cmd.rect.h*s-1,
+					(double)cmd.rect.x*s+0.5+(double)cmd.rect.w*s/2-0.5, (double)cmd.rect.y*s+0.5,
+					(double)cmd.rect.x*s+0.5+(double)cmd.rect.w*s-1, (double)cmd.rect.y*s+0.5+(double)cmd.rect.h*s-1,
 				};
-				drawPolygon(verts, 3, 1.0f, cmd.col);
+				drawPolygon(verts, 3, 1.0, cmd.col);
 			}
 		}
 		else if (cmd.type == IMGUI_GFXCMD_TEXT)

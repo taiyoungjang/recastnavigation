@@ -36,7 +36,7 @@ protected:
 
 	class dtTileCache* m_tileCache;
 	
-	float m_cacheBuildTimeMs;
+	double m_cacheBuildTimeMs;
 	int m_cacheCompressedSize;
 	int m_cacheRawSize;
 	int m_cacheLayerCount;
@@ -59,7 +59,7 @@ protected:
 	
 	int m_maxTiles;
 	int m_maxPolysPerTile;
-	float m_tileSize;
+	double m_tileSize;
 	
 public:
 	Sample_TempObstacles();
@@ -72,15 +72,15 @@ public:
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
-	virtual void handleUpdate(const float dt);
+	virtual void handleUpdate(const double dt);
 
-	void getTilePos(const float* pos, int& tx, int& ty);
+	void getTilePos(const double* pos, int& tx, int& ty);
 	
 	void renderCachedTile(const int tx, const int ty, const int type);
 	void renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view);
 
-	void addTempObstacle(const float* pos);
-	void removeTempObstacle(const float* sp, const float* sq);
+	void addTempObstacle(const double* pos);
+	void removeTempObstacle(const double* sp, const double* sq);
 	void clearAllTempObstacles();
 
 	void saveAll(const char* path);

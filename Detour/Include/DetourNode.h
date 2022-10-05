@@ -35,9 +35,9 @@ static const int DT_NODE_PARENT_BITS = 24;
 static const int DT_NODE_STATE_BITS = 2;
 struct dtNode
 {
-	float pos[3];								///< Position of the node.
-	float cost;									///< Cost from previous node to current node.
-	float total;								///< Cost up to the node.
+	double pos[3];								///< Position of the node.
+	double cost;									///< Cost from previous node to current node.
+	double total;								///< Cost up to the node.
 	unsigned int pidx : DT_NODE_PARENT_BITS;	///< Index to parent node.
 	unsigned int state : DT_NODE_STATE_BITS;	///< extra state information. A polyRef can have multiple nodes with different extra info. see DT_MAX_STATES_PER_NODE
 	unsigned int flags : 3;						///< Node flags. A combination of dtNodeFlags.
